@@ -36,8 +36,8 @@ class GOOGLE_VIEW:
                  cred = f.read();
                  f.close()
                  return cred
-             self.credentials = get_stored_credentials()
-             __build_service();
+            self.credentials = get_stored_credentials()
+            __build_service();
         
     def authent(self):
         flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, SCOPE, REDIRECT_URI)
