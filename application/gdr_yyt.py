@@ -31,15 +31,13 @@ class GOOGLE_VIEW:
     credentials = None
     def __init__(self):
        if glob.glob('GOOGLE_CREDENTIAL'):
-            self.NeedLogin = False
-            return
-       def get_stored_credentials():
-             f = open('GOOGLE_CREDENTIAL', 'r+')
-             cred = f.read();
-             f.close()
-             return cred
-       self.credentials = get_stored_credentials()
-       __build_service();
+            def get_stored_credentials():
+                 f = open('GOOGLE_CREDENTIAL', 'r+')
+                 cred = f.read();
+                 f.close()
+                 return cred
+            self.credentials = get_stored_credentials()
+            __build_service();
         
     def authent(self):
         flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, SCOPE, REDIRECT_URI)
