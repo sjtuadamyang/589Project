@@ -1,92 +1,114 @@
 #!/usr/bin/python
 import sys
+import glob
 import httplib2
 import pprint
-
+import logging
+import oauth2client.client
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
 from oauth2client.client import OAuth2WebServerFlow
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
 from apiclient import errors
 
-def download_file(service, drive_file):
-  download_url = drive_file.get('downloadUrl')
-  if download_url:
-    resp, content = service._http.request(download_url)
-    if resp.status == 200:
-      print 'Status: %s ' % resp
-      print content
-      return content
-    else:
-      print 'Status: %s ' % resp
-      return None
-  else:
-      return None
+class NeedLoginException():
+  """Needs to call autenti"""
+
+class GOOGLE_VIEW:
+    METADATA_NAME = 'metadata.xml'
+    REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
+    SCOPES = [
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+        # Add other requested scopes.
+    ]
+    # Copy your credentials from the APIs Console
+    CLIENT_SECRET = 'eZmvRwEGtJkXQRdsvsz1DQhS'
+    CLIENT_ID = '1021813612028.apps.googleusercontent.com'
+    Drive_Service = False
+    credentials = None
+    def __init__(self):
+       if glob.glob('GOOGLE_CREDENTIAL'):
+            self.NeedLogin = False
+            return
+       def get_stored_credentials():
+             f = open('GOOGLE_CREDENTIAL', 'r+')
+             cred = f.read();
+             f.close()
+             return cred
+       self.credentials = get_stored_credentials()
+       __build_service();
+        
+    def authent(self):
+        flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, SCOPE, REDIRECT_URI)
+        authorize_url = flow.step1_get_authorize_url()
+        print 'Go to the following link in your browser: '+ authorize_url
+        code = raw_input('Enter verification code: ').strip()
+        self.credentials = flow.step2_exchange(code)
+        # def store_credentials(credentials):
+        f = open('GOOGLE_CREDENTIAL', 'w+')
+        f.write(self.credentials.to_json())
+        f.close()
+        __build_service();
+
+    def __build_service(self):
+        http = httplib2.Http()
+        http = self.credentials.authorize(http)
+        self.Drive_Service = build('drive', 'v2', http=http)
+
+    def download_file(self, download_url, path):
+        if  not self.Drive_Service: 
+            raise NeedLoginException(None)
+        resp, content = service._http.request(download_url)
+        if resp.status == 200:
+            print 'Download Succeed'
+            f = open(path, 'w+')
+            f.write(content)
+            f.close()
+        else:
+            print 'Download Failed'
 
 
-def retrieve_all_files(service):
- result = []
- page_token = None
- while True:
-  try:
-   param = {}
-   if page_token:
-    param['pageToken'] = page_token
-   files = service.files().list(**param).execute()
-   result.extend(files['items'])
-   page_token = files.get('nextPageToken')
-   if not page_token:
-    break
-  except errors.HttpError, error:
-   print 'An error occurred: %s' % error
-   break
- return result
+    def retrieve_metadata():
+        if  not self.Drive_Service: 
+            raise NeedLoginException(None)
+        result = []
+        page_token = None
+        while True:
+            try:
+                param = {}
+                if page_token:
+                    param['pageToken'] = page_token
+                files = service.files().list(**param).execute()
+                result.extend(files['items'])
+                page_token = files.get('nextPageToken')
+                if not page_token:
+                    break
+            except errors.HttpError, error:
+                print 'An error occurred: %s' % error
+                break
+        for tmp in result:
+            if tmp['title'] == METADATA_NAME:
+                content = download_file(tmp['download_url'], METADATA_NAME)
+                return
 
+    def upload(self, title, filename):
+        if  not self.Drive_Service: 
+            raise NeedLoginException(None)
+        # upload a file
+        media_body = MediaFileUpload(FILENAME, mimetype='text/plain', resumable=True)
+        body = {
+            'title': title,
+            'mimeType': ''
+        }
 
-# Copy your credentials from the APIs Console
-CLIENT_ID = '1021813612028.apps.googleusercontent.com'
-CLIENT_SECRET = 'eZmvRwEGtJkXQRdsvsz1DQhS'
+        file = self.Drive_Service.files().insert(body=body, media_body=media_body).execute()
+        return file
 
-# Check https://developers.google.com/drive/scopes for all available scopes
-OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
+    def delete(self, file_id):
+        if  not self.Drive_Service: 
+            raise NeedLoginException(None)
+        self.Drive_Service.files().delete(fileId=file_id).execute() 
 
-# Redirect URI for installed apps
-REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
-# Path to the file to upload
-#FILENAME = 'document.txt'
-
-# Run through the OAuth flow and retrieve credentials
-flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI)
-authorize_url = flow.step1_get_authorize_url()
-print 'Go to the following link in your browser: ' + authorize_url
-code = raw_input('Enter verification code: ').strip()
-credentials = flow.step2_exchange(code)
-#credentials = flow.step2_exchange('4/78nDZVnwuMY5zv6nP1SNdoMiy2-V.Muiy4JdEnUkbuJJVnL49Cc8GdR_FdQI') 
-
-# Create an httplib2.Http object and authorize it with our credentials
-http = httplib2.Http()
-http = credentials.authorize(http)
-
-drive_service = build('drive', 'v2', http=http)
-
-result = retrieve_all_files(drive_service);
-
-for tmp in result:
-  print tmp
-  print 'title'+tmp['title']
-  if tmp.get('downloadUrl'):
-    print 'download link:'+tmp['downloadUrl']
-    content = download_file(drive_service, tmp)
-    print 'content:'+content
-
-"""
-# Insert a file
-media_body = MediaFileUpload(FILENAME, mimetype='text/plain', resumable=True)
-body = {
-  'title': 'My document',
-  'description': 'A test document',
-  'mimeType': 'text/plain'
-}
-
-file = drive_service.files().insert(body=body, media_body=media_body).execute()
-pprint.pprint(file)
-"""
