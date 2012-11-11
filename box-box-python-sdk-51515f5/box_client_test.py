@@ -26,3 +26,7 @@ if needlogin:
     f.close
 
 client.upload('test.txt', auth_token=token, folder_id=0, share=1)
+
+client.listfile(api_key='9cluykmx5i2filqz202p1t5frptgtjwn', auth_token=token, folder_id=0)
+
+client.downloadall(api_key='9cluykmx5i2filqz202p1t5frptgtjwn', auth_token=token, folder_id=0)

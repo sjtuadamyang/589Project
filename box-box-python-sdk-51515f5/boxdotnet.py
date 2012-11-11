@@ -125,6 +125,8 @@ class XMLNode:
         if storeXML: rootNode.xml = xmlStr
 
         return __parseXMLElement(dom.firstChild, rootNode)
+        
+
 
 class BoxDotNetError(Exception):
     """Exception class for errors received from Facebook."""
@@ -142,7 +144,8 @@ class BoxDotNet(object):
         'logout'            :   'logout_ok',
         'create_folder'     :   'create_ok',
         'upload'            :   'upload_ok',
-        'delete'            :   's_delete_node'
+        'delete'            :   's_delete_node',
+        'filelist'          :   'listing_ok'
     }
 
     def __init__(self, browser="firefox"):
@@ -263,4 +266,30 @@ class BoxDotNet(object):
 
         print rspXML
         return XMLNode.parseXML(rspXML)
+    
+    def listfile(self, **arg):
+        # verify key names
+        for a in arg.keys():
+            if a != "api_key" and a != "auth_token" and a != "folder_id":
+                sys.stderr.write("Box.net api: warning: unknown parameter \"%s\" sent to Box.net.upload\n" % (a))
 
+        url = 'https://www.box.net/api/1.0/rest?action=get_account_tree&api_key=%s&auth_token=%s&folder_id=%s&params[]=onelevel&params[]=nozip' %(arg['api_key'], arg['auth_token'], arg['folder_id'])
+
+        request = urllib2.Request(url) 
+        response = urllib2.urlopen(request)
+        rspXML = response.read()
+        print rspXML
+        return XMLNode.parseXML(rspXML)
+
+    def downloadall(self, **arg):
+        # verify key names
+        for a in arg.keys():
+            if a != "api_key" and a != "auth_token" and a != "folder_id":
+                sys.stderr.write("Box.net api: warning: unknown parameter \"%s\" sent to Box.net.upload\n" % (a))
+        rsp = self.listfile(api_key=arg['api_key'], auth_token=arg['auth_token'], folder_id=arg['folder_id'])
+        fileid = rsp.tree[0].folder[0].files[0].file[0]["id"] 
+        url = 'https://www.box.net/api/1.0/download/%s/%s' %(arg['auth_token'], fileid)
+        request = urllib2.Request(url)
+        response = urllib2.urlopen(request) 
+        rspXML = response.read()
+        print rspXML
