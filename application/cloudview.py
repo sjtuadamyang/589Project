@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
 import boxdotnet
+import gdr_yyt
 import os.path
 
 class cloudview:
-    client = boxdotnet.BoxDotNet()
+    client_gd = gdr_yyt.GOOGLE_VIEW()
+    client_box = boxdotnet.BoxDotNet()
     app_id = '9cluykmx5i2filqz202p1t5frptgtjwn'
     needlogin = False
     token = ''
@@ -43,9 +45,13 @@ class cloudview:
 
         if self.metadata == '':
             #init a empty metadata file
+            """
+            <metadata>
+            <view ts='0'/>
+            </metadata>
+            """
             self.metadata = boxdotnet.XMLNode()
             self.metadata.elementName='metadata'
-            #add a view with ts of 0
             child = boxdotnet.XMLNode()
             child.elementName = 'view'
             child['ts']='0'
