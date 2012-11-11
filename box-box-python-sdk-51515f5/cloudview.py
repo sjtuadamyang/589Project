@@ -23,11 +23,11 @@ class cloudview:
             self.needlogin = True
 
         try:
-            f = open('./viewmeta.xml', 'rb')
+            f = open('./metadata.xml', 'rb')
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
-            print self.metadata.folder[0].file[0]['name']
+            print self.metadata.view[0]['ts']
         except IOError:
-            print 'no file named viewmeta.xml'
+            print 'no file named metadata.xml'
 
     def sync(self):
         """not implemented yet"""
@@ -42,13 +42,28 @@ class cloudview:
             f.close()
 
         if self.metadata == '':
+            #init a empty metadata file
             self.metadata = boxdotnet.XMLNode()
-            self.metadata.view[0][timestamp] = "0"
+            self.metadata.elementName='metadata'
+            #add a view with ts of 0
+            child = boxdotnet.XMLNode()
+            child.elementName = 'view'
+            child['ts']='0'
+            try:
+                list = getattr(self.metadata, 'view')
+            except AttributeError:
+                setattr(self.metadata, 'view', [])
+            list = getattr(self.metadata, 'view')
+            list.append(child)
+            #write the metadata to './metadata.xml'
+            f = open('metadata.xml', 'wb')
+            f.write(self.metadata.convertXML())
+            f.close()
 
 def main():
     print 'app starts'
     cv = cloudview() 
-    cv.init
+    cv.init()
 
 if __name__ == "__main__":
     main()

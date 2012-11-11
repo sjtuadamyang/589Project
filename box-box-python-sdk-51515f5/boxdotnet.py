@@ -29,6 +29,7 @@ import os
 import sys
 
 from xml.dom.minidom import parseString
+from xml.dom.minidom import Document
 import xml.dom
 import webbrowser
 
@@ -76,6 +77,21 @@ class XMLNode:
     def __getitem__(self, key):
         """Retrieve a node's attribute from the attrib hash."""
         return self.attrib[key]
+
+    def convertXML(self):
+        def __recursive_create(doc, base, inst):
+            element = doc.createElement(inst.elementName)
+            base.appendChild(element)
+            for ab in inst.attrib.keys():
+                element.setAttribute(ab, inst[ab])
+            for an in inst.__dict__.keys():
+                attr = inst.__dict__[an]
+                if isinstance(attr, list) and isinstance(attr[0], XMLNode):
+                    for child in attr:
+                        __recursive_create(doc, element, child)
+        doc = Document()
+        __recursive_create(doc, doc, self)
+        return doc.toprettyxml(indent="    ")
 
     #-----------------------------------------------------------------------
     @classmethod
