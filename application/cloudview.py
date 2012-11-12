@@ -7,27 +7,12 @@ import os.path
 class cloudview:
     client_gd = gdr_yyt.GOOGLE_VIEW()
     client_box = boxdotnet.BoxDotNet()
-    #app_id = '9cluykmx5i2filqz202p1t5frptgtjwn'
-    #needlogin = False
-    #token = ''
     metadata = ''
     def __init__(self):
-        #start login process
-        #try:
-        #    f = open('Token', 'rb')
-        #    self.token = f.read();
-        #    if self.token == '': 
-        #        print 'we got nothing and we need to login'
-        #        self.needlogin = True
-        #    f.close()
-        #except IOError:
-        #    print 'no token file been established'
-        #    self.needlogin = True
-
         try:
             f = open('./metadata.xml', 'rb')
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
-            print self.metadata.view[0]['ts']
+            print "local view is at stamp: "+str(self.metadata.view[0]['ts'])
         except IOError:
             print 'no file named metadata.xml'
 
@@ -35,19 +20,14 @@ class cloudview:
         """not implemented yet"""
 
     def init(self):
-        """not implemented yet"""
-        #if self.needlogin:
-            #rsp = self.client_box.login(self.app_id)
-            #self.token = rsp.auth_token[0].elementText
-            #f = open('Token', 'wb')
-            #f.write(self.token)
-            #f.close()
+        """all the client do authentication"""
+        self.client_box.authenticate()
 
         if self.metadata == '':
             #init a empty metadata file
             """
             <metadata>
-            <view ts='0'/>
+                <view ts='0'/>
             </metadata>
             """
             self.metadata = boxdotnet.XMLNode()
