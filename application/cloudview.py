@@ -31,7 +31,7 @@ class cloudview:
         """not implemented yet"""
         list = '' 
         if not self.initialized:
-            raise Exception(InitError, "application not initialized")
+            raise Exception(CVError, "application not initialized")
         for file in metadata.view[0].file:
             if file['fullpath'] == cv_current_dir + file['title']:
                 list += '\n'+file[title]
@@ -46,7 +46,9 @@ class cloudview:
         """not implemented yet"""
 
     def cd(self, dir):
-                 
+        if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
+            raise Exception(CVError, "dir not exist")
+        self.cv_current_dir = self.cv_current_dir + dir
 
     def init(self):
         """all the client do authentication"""
@@ -81,12 +83,13 @@ class cloudview:
         self.initialized = True
 
     def featureTest(self):
-        metaNode_1 = self.client_box.getmetadata()    
+    
+        """metaNode_1 = self.client_box.getmetadata()    
         self.client_gd.upload('metadata.xml', 'metadata.xml')
         metaNode_2 = self.client_gd.retrieve_metadata()    
         if not metaNode_2 == None:
             print 'gdr metadata'
-            print metaNode_2.convertXML()
+            print metaNode_2.convertXML()"""
 
 def main():
     print 'app starts'
