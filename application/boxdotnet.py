@@ -150,6 +150,9 @@ class BoxDotNetError(Exception):
 
 class BoxDotNet(object):
     END_POINT = 'http://www.box.net/api/1.0/rest?'
+    API_KEY = '9cluykmx5i2filqz202p1t5frptgtjwn'
+    authenticated = True
+    token = ''
 
     #The box.net return status codes are all over the show
     # method_name : return_value_that_is_ok
@@ -166,8 +169,16 @@ class BoxDotNet(object):
 
     def __init__(self, browser="firefox"):
         self.browser = browser
-
         self.__handlerCache={}
+        try:
+            f = open('Token', 'rb')
+            self.token = f.read()
+            if self.token == '':
+                print 'we got nothing and we need to login'
+                self.authenticated = False 
+        except IOError:
+            print 'no token file been established'
+            self.authenticated = False
 
     #encodes the args and handles params[] supplied in a list
     @classmethod
@@ -189,22 +200,25 @@ class BoxDotNet(object):
 
         raise BoxDotNetError ("Box.net returned [%s] for action [%s]" % (status, method))
 
-    def login(self, api_key):
-        # get ticket
-        rsp = self.get_ticket (api_key=api_key)
-        ticket = rsp.ticket[0].elementText
+    def authenticate(self):
+        if self.authenticated == False:
+            # get ticket
+            rsp = self.get_ticket (api_key=self.API_KEY)
+            ticket = rsp.ticket[0].elementText
 
-        # open url
-        url = "http://www.box.net/api/1.0/auth/%s" % ticket
-        #os.system('%s "%s"' % (self.browser, url))
-        webbrowser.open_new_tab(url)
+            # open url
+            url = "http://www.box.net/api/1.0/auth/%s" % ticket
+            webbrowser.open_new_tab(url)
+            raw_input()
 
-        raw_input()
-
-        # get token
-        rsp = self.get_auth_token(api_key=api_key, ticket=ticket)
-
-        return rsp
+            # get token
+            rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)
+            token = rsp.auth_token[0].elementText
+            print "get token response: "
+            print "token is "+str(token)
+            # write token to file
+            f = open('Token', 'wb')
+            f.write(token)
 
     def __getattr__(self, method, **arg):
         """
@@ -235,20 +249,18 @@ class BoxDotNet(object):
 
     #-------------------------------------------------------------------
     #-------------------------------------------------------------------
-    def upload(self, filename, **arg):
+    def upload(self, title, path):
         """
         Upload a file to box.net.
         """
+        # check authentication
+        if not authenticated:
+            raise UploadException("application not authenticated")
 
         if filename == None:
             raise UploadException("filename OR jpegData must be specified")
 
-        # verify key names
-        for a in arg.keys():
-            if a != "api_key" and a != "auth_token" and a != "folder_id" and a != 'share':
-                sys.stderr.write("Box.net api: warning: unknown parameter \"%s\" sent to Box.net.upload\n" % (a))
-
-        url = 'http://upload.box.net/api/1.0/upload/%s/%s' % (arg['auth_token'], arg['folder_id'])
+        url = 'http://upload.box.net/api/1.0/upload/%s/%s' % (self.token, '0')
 
         # construct POST data
         boundary = mimetools.choose_boundary()
@@ -257,16 +269,16 @@ class BoxDotNet(object):
         # filename
         body += "--%s\r\n" % (boundary)
         body += 'Content-Disposition: form-data; name="share"\r\n\r\n'
-        body += "%s\r\n" % (arg['share'])
+        body += "%s\r\n" % ('1')
 
         body += "--%s\r\n" % (boundary)
         body += "Content-Disposition: form-data; name=\"file\";"
-        body += " filename=\"%s\"\r\n" % filename
-        body += "Content-Type: %s\r\n\r\n" % get_content_type(filename)
+        body += " filename=\"%s\"\r\n" % title
+        body += "Content-Type: %s\r\n\r\n" % get_content_type(title)
 
         #print body
 
-        fp = file(filename, "rb")
+        fp = file(path, "rb")
         data = fp.read()
         fp.close()
 
@@ -283,13 +295,9 @@ class BoxDotNet(object):
         print rspXML
         return XMLNode.parseXML(rspXML)
     
-    def listfile(self, **arg):
-        # verify key names
-        for a in arg.keys():
-            if a != "api_key" and a != "auth_token" and a != "folder_id":
-                sys.stderr.write("Box.net api: warning: unknown parameter \"%s\" sent to Box.net.upload\n" % (a))
+    def __listfile(self):
 
-        url = 'https://www.box.net/api/1.0/rest?action=get_account_tree&api_key=%s&auth_token=%s&folder_id=%s&params[]=onelevel&params[]=nozip' %(arg['api_key'], arg['auth_token'], arg['folder_id'])
+        url = 'https://www.box.net/api/1.0/rest?action=get_account_tree&api_key=%s&auth_token=%s&folder_id=%s&params[]=onelevel&params[]=nozip' %(self.API_KEY, self.token, 0)
 
         request = urllib2.Request(url) 
         response = urllib2.urlopen(request)
@@ -297,15 +305,19 @@ class BoxDotNet(object):
         print rspXML
         return XMLNode.parseXML(rspXML)
 
-    def downloadall(self, **arg):
-        # verify key names
-        for a in arg.keys():
-            if a != "api_key" and a != "auth_token" and a != "folder_id":
-                sys.stderr.write("Box.net api: warning: unknown parameter \"%s\" sent to Box.net.upload\n" % (a))
-        rsp = self.listfile(api_key=arg['api_key'], auth_token=arg['auth_token'], folder_id=arg['folder_id'])
-        fileid = rsp.tree[0].folder[0].files[0].file[0]["id"] 
-        url = 'https://www.box.net/api/1.0/download/%s/%s' %(arg['auth_token'], fileid)
+    def download(self, file_id, path):
+
+        rsp = self.listfile(api_key=self.API_KEY, auth_token=self.token, folder_id=0)
+        #fileid = rsp.tree[0].folder[0].files[0].file[0]["id"] 
+        url = 'https://www.box.net/api/1.0/download/%s/%s' %(self.token, file_id)
         request = urllib2.Request(url)
         response = urllib2.urlopen(request) 
         rspXML = response.read()
-        print rspXML
+        #print rspXML
+        f = open(path, 'wb')
+        f.write(rspXML) 
+        f.close()
+
+    def getmetadata(self):
+        list_tree = __listfile()
+        
