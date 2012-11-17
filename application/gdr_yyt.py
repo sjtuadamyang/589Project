@@ -5,6 +5,7 @@ import httplib2
 import pprint
 import logging
 import oauth2client.client
+from boxdotnet import XMLNode
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
 from oauth2client.client import OAuth2WebServerFlow
@@ -16,7 +17,7 @@ class NeedLoginException():
   """Needs to call autenti"""
 
 class GOOGLE_VIEW:
-    METADATA_NAME = 'metadata.xml'
+    metadata = []
     REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
     SCOPES = [
         'https://www.googleapis.com/auth/drive.file',
@@ -62,6 +63,9 @@ class GOOGLE_VIEW:
         resp, content = service._http.request(download_url)
         if resp.status == 200:
             print 'Download Succeed'
+            if path == 'metadata.xml':
+                metadata = XMLNode.parseXML(content, True)
+                
             f = open(path, 'w+')
             f.write(content)
             f.close()
@@ -89,8 +93,8 @@ class GOOGLE_VIEW:
                 break
         for tmp in result:
             if tmp['title'] == METADATA_NAME:
-                content = download_file(tmp['download_url'], METADATA_NAME)
-                return
+                download_file(tmp['download_url'], 'metadata.xml')
+                break
 
     def upload(self, title, filename):
         if  not self.Drive_Service: 
