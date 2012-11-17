@@ -64,7 +64,8 @@ class GOOGLE_VIEW:
         if resp.status == 200:
             print 'Download Succeed'
             if path == 'metadata.xml':
-                metadata = XMLNode.parseXML(content, True)
+                self.metadata = XMLNode.parseXML(content, True)
+                return self.metadata
                 
             f = open(path, 'w+')
             f.write(content)
@@ -73,7 +74,7 @@ class GOOGLE_VIEW:
             print 'Download Failed'
 
 
-    def retrieve_metadata():
+    def retrieve_metadata(self):
         if  not self.Drive_Service: 
             raise NeedLoginException(None)
         result = []
@@ -83,7 +84,7 @@ class GOOGLE_VIEW:
                 param = {}
                 if page_token:
                     param['pageToken'] = page_token
-                files = service.files().list(**param).execute()
+                files = self.Drive_Service.files().list(**param).execute()
                 result.extend(files['items'])
                 page_token = files.get('nextPageToken')
                 if not page_token:
@@ -93,7 +94,7 @@ class GOOGLE_VIEW:
                 break
         for tmp in result:
             if tmp['title'] == METADATA_NAME:
-                download_file(tmp['download_url'], 'metadata.xml')
+                return (download_file(tmp['download_url'], 'metadata.xml'))
                 break
 
     def upload(self, title, filename):
