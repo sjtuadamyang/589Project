@@ -5,6 +5,7 @@ import httplib2
 import pprint
 import logging
 import oauth2client.client
+import webbrowser
 from boxdotnet import XMLNode
 from apiclient.discovery import build
 from apiclient.http import MediaFileUpload
@@ -19,12 +20,10 @@ class NeedLoginException():
 class GOOGLE_VIEW:
     metadata = []
     REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
-    SCOPES = [
-        'https://www.googleapis.com/auth/drive.file',
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile',
-        # Add other requested scopes.
-    ]
+    SCOPES = 'https://www.googleapis.com/auth/drive'
+    #'https://www.googleapis.com/auth/userinfo.email',
+    #'https://www.googleapis.com/auth/userinfo.profile',
+    # Add other requested scopes.
     # Copy your credentials from the APIs Console
     CLIENT_SECRET = 'eZmvRwEGtJkXQRdsvsz1DQhS'
     CLIENT_ID = '1021813612028.apps.googleusercontent.com'
@@ -37,22 +36,23 @@ class GOOGLE_VIEW:
                  cred = f.read();
                  f.close()
                  return cred
-            self.credentials = get_stored_credentials()
-            __build_service();
+            self.credentials = oauth2client.client.Credentials.new_from_json(get_stored_credentials())
+            self._build_service();
         
     def authent(self):
         flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
         print 'Go to the following link in your browser: '+ authorize_url
+        webbrowser.open_new_tab(authorize_url);
         code = raw_input('Enter verification code: ').strip()
         self.credentials = flow.step2_exchange(code)
         # def store_credentials(credentials):
         f = open('GOOGLE_CREDENTIAL', 'w+')
         f.write(self.credentials.to_json())
         f.close()
-        __build_service();
+        self._build_service();
 
-    def __build_service(self):
+    def _build_service(self):
         http = httplib2.Http()
         http = self.credentials.authorize(http)
         self.Drive_Service = build('drive', 'v2', http=http)
