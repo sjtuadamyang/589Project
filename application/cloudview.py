@@ -18,9 +18,20 @@ class cloudview:
             print 'no file named metadata.xml'
 
     def sync(self):
-        """create folder"""
-        """compare metadata lists, choose to upload or download according to the timestamp"""
-              
+        """create folder
+            compare metadata lists, choose to upload or download according to the timestamp"""
+
+    def ls(self):
+        """not implemented yet"""
+
+    def cp(self):
+        """not implemented yet"""
+
+    def mv(self):
+        """not implemented yet"""
+
+    def rm(self):
+        """not implemented yet"""
 
     def init(self):
         """all the client do authentication"""
