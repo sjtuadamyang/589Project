@@ -60,7 +60,7 @@ class GOOGLE_VIEW:
     def download_file(self, download_url, path):
         if  not self.Drive_Service: 
             raise NeedLoginException(None)
-        resp, content = service._http.request(download_url)
+        resp, content = self.Drive_Service._http.request(download_url)
         if resp.status == 200:
             print 'Download Succeed'
             if path == 'metadata.xml':
@@ -96,7 +96,7 @@ class GOOGLE_VIEW:
         for tmp in result:
             print tmp['title']
             if tmp['title'] == 'metadata.xml':
-                return (download_file(tmp['download_url'], 'metadata.xml'))
+                return (self.download_file(tmp['downloadUrl'], 'metadata.xml'))
                 break
 
     def upload(self, title, filename):
