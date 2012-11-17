@@ -92,8 +92,10 @@ class GOOGLE_VIEW:
             except errors.HttpError, error:
                 print 'An error occurred: %s' % error
                 break
+        print 'titles in google drive'
         for tmp in result:
-            if tmp['title'] == METADATA_NAME:
+            print tmp['title']
+            if tmp['title'] == 'metadata.xml':
                 return (download_file(tmp['download_url'], 'metadata.xml'))
                 break
 
@@ -101,7 +103,7 @@ class GOOGLE_VIEW:
         if  not self.Drive_Service: 
             raise NeedLoginException(None)
         # upload a file
-        media_body = MediaFileUpload(FILENAME, mimetype='text/plain', resumable=True)
+        media_body = MediaFileUpload(filename, mimetype='text/plain', resumable=True)
         body = {
             'title': title,
             'mimeType': ''

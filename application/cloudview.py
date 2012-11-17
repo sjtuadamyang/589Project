@@ -53,9 +53,14 @@ class cloudview:
             f.close()
 
     def featureTest(self):
-        metaNode = self.client_box.getmetadata()    
-        if not metaNode == None:
-            print metaNode.convertXML()
+        metaNode_1 = self.client_box.getmetadata()    
+        #self.client_gd.upload('metadata.xml', 'metadata.xml')
+        metaNode_2 = self.client_gd.retrieve_metadata()    
+        if not metaNode_2 == None:
+            print 'gdr metadata'
+            print metaNode_2.convertXML()
+        #if not metaNode_1 == None:
+        #    print metaNode_1.convertXML()
         #self.client_box.upload("metadata.xml", "metadata.xml")
 
 def main():

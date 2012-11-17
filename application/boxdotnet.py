@@ -213,12 +213,12 @@ class BoxDotNet(object):
 
             # get token
             rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)
-            token = rsp.auth_token[0].elementText
+            self.token = rsp.auth_token[0].elementText
             print "get token response: "
-            print "token is "+str(token)
+            print "token is "+str(self.token)
             # write token to file
             f = open('Token', 'wb')
-            f.write(token)
+            f.write(self.token)
 
     def __getattr__(self, method, **arg):
         """
