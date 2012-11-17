@@ -3,6 +3,7 @@
 import boxdotnet
 import gdr_yyt
 import os.path
+import os
 
 class cloudview:
     client_box = boxdotnet.BoxDotNet()
@@ -24,13 +25,12 @@ class cloudview:
     def ls(self):
         """not implemented yet"""
 
-    def cp(self):
+    def add(self, filename):
         """not implemented yet"""
+        command = 'cp '+filename
+        os.system(command)
 
-    def mv(self):
-        """not implemented yet"""
-
-    def rm(self):
+    def delete(self):
         """not implemented yet"""
 
     def init(self):
@@ -70,9 +70,6 @@ class cloudview:
         if not metaNode_2 == None:
             print 'gdr metadata'
             print metaNode_2.convertXML()
-        #if not metaNode_1 == None:
-        #    print metaNode_1.convertXML()
-        #self.client_box.upload("metadata.xml", "metadata.xml")
 
 def main():
     print 'app starts'
