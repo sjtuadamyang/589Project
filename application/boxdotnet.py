@@ -254,10 +254,10 @@ class BoxDotNet(object):
         Upload a file to box.net.
         """
         # check authentication
-        if not authenticated:
+        if not self.authenticated:
             raise UploadException("application not authenticated")
 
-        if filename == None:
+        if title == None:
             raise UploadException("filename OR jpegData must be specified")
 
         url = 'http://upload.box.net/api/1.0/upload/%s/%s' % (self.token, '0')
@@ -302,22 +302,28 @@ class BoxDotNet(object):
         request = urllib2.Request(url) 
         response = urllib2.urlopen(request)
         rspXML = response.read()
-        print rspXML
         return XMLNode.parseXML(rspXML)
 
-    def download(self, file_id, path):
+    def __download(self, file_id):
 
-        rsp = self.listfile(api_key=self.API_KEY, auth_token=self.token, folder_id=0)
+        rsp = self.__listfile()
         #fileid = rsp.tree[0].folder[0].files[0].file[0]["id"] 
         url = 'https://www.box.net/api/1.0/download/%s/%s' %(self.token, file_id)
         request = urllib2.Request(url)
         response = urllib2.urlopen(request) 
         rspXML = response.read()
-        #print rspXML
-        f = open(path, 'wb')
+        return rspXML
+        """f = open(path, 'wb')
         f.write(rspXML) 
-        f.close()
+        f.close()"""
 
     def getmetadata(self):
-        list_tree = __listfile()
+        list_tree = self.__listfile()
+        file_list = list_tree.tree[0].folder[0].files[0].file
+        metaNode = None
+        for f in file_list:
+            if f["file_name"] == "metadata.xml":
+                meta_id = f["id"]
+                metaNode = XMLNode.parseXML(self.__download(meta_id))
+        return metaNode
         
