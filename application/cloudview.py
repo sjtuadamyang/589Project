@@ -5,7 +5,19 @@ import gdr_yyt
 import os.path
 
 class cloudview:
-    #client_gd.retrieve_metadata()
+    client_box = boxdotnet.BoxDotNet()
+    metadata = ''
+
+    def __init__(self):
+        try:
+            f = open('./metadata.xml', 'rb')
+            self.metadata = boxdotnet.XMLNode.parseXML(f.read())
+            print "local view is at stamp: " + str(self.metadata.view[0]['ts'])
+        except IOError:
+            print 'no file named metadata.xml'
+
+    def sync(self):
+        #client_gd.retrieve_metadata()
         #compare  metas
         #if self.metadata.view[0] == 0:
         #    self.metadata = client_gd.metadata
@@ -54,7 +66,7 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    #cv.featureTest()
+    cv.featureTest()
 
 if __name__ == "__main__":
     main()
