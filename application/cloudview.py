@@ -18,19 +18,22 @@ class cloudview:
 
     def sync(self):
         """not implemented yet"""
-        """download newest metadata"""
+        #download newest metadata
         client_gd.retrieve_metadata()
-        """compare  metas"""
+        #compare  metas
         if self.metadata.view[0] == 0:
             self.metadata = client_gd.metadata
-        """while loop starts"""
-          """create folder"""
-            """compare metadata lists, choose to upload or download according to the timestamp"""
+        #while loop starts
+        """create folder"""
+        """compare metadata lists, choose to upload or download according to the timestamp"""
               
 
     def init(self):
         """all the client do authentication"""
-        self.client_box.authenticate()
+        if not self.client_box.authenticated:
+            self.client_box.authenticate()
+        if not self.client_gd.Drive_Service:
+            self.client_gd.authent()
 
         if self.metadata == '':
             #init a empty metadata file
@@ -54,8 +57,7 @@ class cloudview:
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
-            if not self.client_gd.Drive_Service:
-                self.client_gd.authent()
+            
 
 
 def main():

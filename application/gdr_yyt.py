@@ -40,7 +40,7 @@ class GOOGLE_VIEW:
             __build_service();
         
     def authent(self):
-        flow = OAuth2WebServerFlow(CLIENT_ID, CLIENT_SECRET, SCOPE, REDIRECT_URI)
+        flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
         print 'Go to the following link in your browser: '+ authorize_url
         code = raw_input('Enter verification code: ').strip()
