@@ -8,6 +8,7 @@ class cloudview:
     client_box = boxdotnet.BoxDotNet()
     client_gd = gdr_yyt.GOOGLE_VIEW()
     metadata = ''
+    initialized = False
 
     def __init__(self):
         try:
@@ -23,6 +24,12 @@ class cloudview:
 
     def ls(self):
         """not implemented yet"""
+        list = []
+        if not self.initialized:
+            raise Exception(InitError, "application not initialized")
+        for file in metadata.view[0].file
+            list.append(file['fullpath']) 
+        return list
 
     def cp(self):
         """not implemented yet"""
@@ -62,6 +69,7 @@ class cloudview:
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
+        self.initialized = True
 
     def featureTest(self):
         metaNode_1 = self.client_box.getmetadata()    
