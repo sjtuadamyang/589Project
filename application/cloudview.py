@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import boxdotnet
+import time
 import gdr_yyt
 import os.path
 import os
@@ -37,7 +38,7 @@ class cloudview:
                 list += '\n'+file[title]
         return list
 
-    def add(self, filename):
+    def add(self, filename, primary):
         """not implemented yet"""
         #filename need to be absolute address
         title = os.path.basename(filename)
@@ -48,7 +49,9 @@ class cloudview:
         #add file information to metalist
         file['title']=title
         file['id']=metadata['id']
+        file['ts']=str(int(time.time()))
         metadata['id']=str(int(metadata['id'])+1)
+        metadata.view[0].file.append(file)
 
     def delete(self, filename):
         """not implemented yet"""
@@ -60,9 +63,13 @@ class cloudview:
         command = 'rm '+title
         os.system(command)
         #delete entry in metadatalist
+        for file in metadata.view[0].file:
+            if file['fullpath'] == cv_current_dir+title:
+                #delete
+                metadata.view[0].file.remove(file)
 
     def cd(self, dir):
-                 
+        """"""             
 
     def init(self):
         """all the client do authentication"""
