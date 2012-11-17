@@ -54,7 +54,7 @@ class cloudview:
 
     def featureTest(self):
         metaNode_1 = self.client_box.getmetadata()    
-        #self.client_gd.upload('metadata.xml', 'metadata.xml')
+        self.client_gd.upload('metadata.xml', 'metadata.xml')
         metaNode_2 = self.client_gd.retrieve_metadata()    
         if not metaNode_2 == None:
             print 'gdr metadata'
