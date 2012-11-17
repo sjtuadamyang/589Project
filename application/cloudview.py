@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import boxdotnet
+import time
 import gdr_yyt
 import os.path
 import os
@@ -9,7 +10,7 @@ class cloudview:
     client_box = boxdotnet.BoxDotNet()
     client_gd = gdr_yyt.GOOGLE_VIEW()
     metadata = ''
-    cv_loation = ''
+    cv_location = ''
     cv_current_dir = ''
     initialized = False
 
@@ -37,13 +38,35 @@ class cloudview:
                 list += '\n'+file[title]
         return list
 
-    def add(self, filename):
+    def add(self, filename, primary):
         """not implemented yet"""
-        command = 'cp '+filename
+        #filename need to be absolute address
+        title = os.path.basename(filename)
+        #transfer title into abs address
+        title = cv_location+cv_current_dir +title
+        command = 'cp '+filename+' '+title
         os.system(command)
+        #add file information to metalist
+        file['title']=title
+        file['id']=metadata['id']
+        file['ts']=str(int(time.time()))
+        metadata['id']=str(int(metadata['id'])+1)
+        metadata.view[0].file.append(file)
 
-    def delete(self):
+    def delete(self, filename):
         """not implemented yet"""
+        title = os.path.basename(filename)
+        if not title==filename:
+            print 'delete can only delete files under current directory'
+        #transfer filename into absolute address
+        title = cv_location+cv_current_dir+title
+        command = 'rm '+title
+        os.system(command)
+        #delete entry in metadatalist
+        for file in metadata.view[0].file:
+            if file['fullpath'] == cv_current_dir+title:
+                #delete
+                metadata.view[0].file.remove(file)
 
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
