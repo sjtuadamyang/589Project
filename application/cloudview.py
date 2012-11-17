@@ -9,6 +9,9 @@ class cloudview:
     client_box = boxdotnet.BoxDotNet()
     client_gd = gdr_yyt.GOOGLE_VIEW()
     metadata = ''
+    cv_location = ''
+    cv_current_dir = ''
+    initialized = False
 
     def __init__(self):
         try:
@@ -27,11 +30,27 @@ class cloudview:
 
     def add(self, filename):
         """not implemented yet"""
-        command = 'cp '+filename
+        #filename need to be absolute address
+        title = os.path.basename(filename)
+        #transfer title into abs address
+        title = cv_location+cv_current_dir +title
+        command = 'cp '+filename+' '+title
         os.system(command)
+        #add file information to metalist
+        file['title']=title
+        file['id']=metadata['id']
+        metadata['id']=str(int(metadata['id'])+1)
 
-    def delete(self):
+    def delete(self, filename):
         """not implemented yet"""
+        title = os.path.basename(filename)
+        if not title==filename:
+            print 'delete can only delete files under current directory'
+        #transfer filename into absolute address
+        title = cv_location+cv_current_dir+title
+        command = 'rm '+title
+        os.system(command)
+        #delete entry in metadatalist
 
     def init(self):
         """all the client do authentication"""
