@@ -30,13 +30,14 @@ class folderNode:
         components = path.split(os.sep)
         curNode = self
         index = 1
-        while index < len(components):
+        while index < len(components)-1:
             try:
                 find = curNode.childNodes.index(components[index])
                 curNode = curNode.childNodes[find]
             except ValueError:
                 newNode = curNode.add_child(components[index])
                 curNode = newNode 
+            index+=1
     def cd_to_path(self, dir):
         for item in self.childNodes:
             if item.name == dir:
@@ -91,6 +92,7 @@ class cloudview:
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
             self.local_file = self.__get_filelist(self.metadata)
             for file in self.local_file:
+                print os.path.dirname(file['fullpath'])
                 self.folderRoot.add_child_path(os.path.dirname(file['fullpath']))
             print "local view is at stamp: " + str(self.metadata.view[0]['ts'])
         except IOError:
