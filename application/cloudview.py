@@ -6,6 +6,12 @@ import gdr_yyt
 import os.path
 import os
 
+class CVError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
 class cloudview:
     client_box = boxdotnet.BoxDotNet()
     client_gd = gdr_yyt.GOOGLE_VIEW()
