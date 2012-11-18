@@ -63,6 +63,14 @@ class cloudview:
         self.metadata.view[0].file.append(file)
         print self.metadata.convertXML()
 
+    def mkdir(self, dirname):
+        fspath = self.cv_location+self.cv_current_dir+dirname
+        title = os.path.basename(dirname)
+        if not title==dirname:
+            #raise expection
+            """"""
+        command = 'mkdir '+fspath
+        os.system(command)
 
     def delete(self, filename):
         """not implemented yet"""
@@ -119,7 +127,6 @@ class cloudview:
         self.initialized = True
 
     def featureTest(self):
-    
         """metaNode_1 = self.client_box.getmetadata()    
         self.client_gd.upload('metadata.xml', 'metadata.xml')
         metaNode_2 = self.client_gd.retrieve_metadata()    
