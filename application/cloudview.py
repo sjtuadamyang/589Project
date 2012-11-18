@@ -61,6 +61,7 @@ class cloudview:
 
     def sync(self):
         __retrieve_ser_metadata()
+        
          
 
     def __retrieve_ser_metadata(self):
