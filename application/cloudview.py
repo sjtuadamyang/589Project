@@ -55,6 +55,35 @@ class cloudview:
     folderRoot = folderNode('/')
     curFolderNode = folderRoot
 
+    def run(self):
+      while (1):
+        tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
+        command = raw_input(tmp_string)
+        command = command.split()
+        if command[0] == 'sync':
+            self.sync()
+            continue
+        if command[0] == 'ls':
+            self.ls()
+            continue
+        if command[0] == 'add':
+            self.add(command[1], command[2])
+            continue
+        if command[0] == 'delete':
+            self.delete(command[1])
+            continue
+        if command[0] ==  'mkdir':
+            self.mkdir(command[1])
+            continue
+        if command[0] == 'cd':
+            self.cd(command[1])
+            continue
+        if command[0] == 'exit':
+            print 'Existing CloudView'
+            return
+        print 'Command Not Exists'
+        print 'Commands:\nsync:\t\t\tsyncnize between server and local\nls:\t\t\tlist all the files\nadd filename drive:\tadd new file to the current directory\ndelete filename:\tdelete file under current directory\nmkdir dir:\t\tmake new directory under current directory\ncd dir:\t\t\tgoto certain directory\nexit:\t\t\texit CloudView'
+
     def __init__(self):
         try:
             f = open('./metadata.xml', 'rb')
@@ -178,6 +207,9 @@ class cloudview:
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
             raise Exception(CVError, "dir not exist")
         self.cv_current_dir = self.cv_current_dir + dir + '/'
+        self.cv_current_dir = '/'+os.path.relpath(os.path.abspath(self.cv_location+self.cv_current_dir), self.cv_location)+'/'
+        if self.cv_current_dir == '/./':
+            self.cv_current_dir='/'
 
     def write_meta(self):
         f = open('metadata.xml', 'wb')
@@ -230,7 +262,7 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    cv.sync()
+    cv.run()
 
 if __name__ == "__main__":
     main()
