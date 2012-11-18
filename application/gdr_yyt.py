@@ -15,7 +15,7 @@ from oauth2client.client import FlowExchangeError
 from apiclient import errors
 
 class NeedLoginException():
-  """Needs to call autenti"""
+  """test Needs to call autenti"""
 
 class GOOGLE_VIEW:
     metadata = []
