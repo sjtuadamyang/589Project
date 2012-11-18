@@ -152,6 +152,9 @@ def main():
     cv.init()
     cv.add('~/test.txt')
     cv.ls()
+    cv.mkdir('a')
+    cv.cd('a')
+    cv.add('~/test.txt')
     cv.write_meta()
 
 if __name__ == "__main__":

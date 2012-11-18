@@ -1,10 +1,8 @@
 <?xml version="1.0" ?>
 <metadata>
-    <view cur_id="5" ts="1353261704">
-        <file fullpath="/test.txt" id="0" title="test.txt" ts="1353260642"/>
-        <file fullpath="/test.txt" id="1" title="test.txt" ts="1353261371"/>
-        <file fullpath="/test.txt" id="2" title="test.txt" ts="1353261382"/>
-        <file fullpath="/test.txt" id="3" title="test.txt" ts="1353261385"/>
-        <file fullpath="/test.txt" id="4" title="test.txt" ts="1353261704"/>
+    <view cur_id="3" ts="1353262189">
+        <file fullpath="/test.txt" id="0" title="test.txt" ts="1353262153"/>
+        <file fullpath="/test.txt" id="1" title="test.txt" ts="1353262189"/>
+        <file fullpath="/a/test.txt" id="2" title="test.txt" ts="1353262189"/>
     </view>
 </metadata>
