@@ -21,6 +21,34 @@ class cloudview:
     cv_current_dir = ''
     initialized = False
 
+    def run(self):
+      while (1):
+        command = raw_input('Cloudview>>')
+        command = command.split()
+        if command[0] == 'sync':
+            self.sync()
+            continue
+        if command[0] == 'ls':
+            self.ls()
+            continue
+        if command[0] == 'add':
+            self.add(command[1], command[2])
+            continue
+        if command[0] == 'delete':
+            self.delete(command[1])
+            continue
+        if command[0] ==  'mkdir':
+            self.mkdir(command[1])
+            continue
+        if command[0] == 'cd':
+            self.cd(command[1])
+            continue
+        if command[0] == 'exit':
+            print 'Existing CloudView'
+            return
+        print 'Command Not Exists'
+        print 'Commands: sync; ls; add filename drive; delete filename; mdir dir; cd dir; exit'
+
     def __init__(self):
         try:
             f = open('./metadata.xml', 'rb')
@@ -177,7 +205,7 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    cv.retrieve_ser_metadata()
+    cv.run()
 
 if __name__ == "__main__":
     main()
