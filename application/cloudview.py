@@ -24,7 +24,7 @@ class folderNode:
         return ret
     def add_child(self, name):
         child = folderNode(name)
-        childNodes.append(child)
+        self.childNodes.append(child)
         return child
     def add_child_path(self, path):
         components = path.split(os.sep)
@@ -41,6 +41,7 @@ class folderNode:
         for item in self.childNodes:
             if item.name == dir:
                 return item
+        raise(CVError, "no dir found")
 
 class cloudview:
     client_box = boxdotnet.BoxDotNet()
@@ -207,6 +208,7 @@ class cloudview:
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
             raise Exception(CVError, "dir not exist")
         self.cv_current_dir = self.cv_current_dir + dir + '/'
+        self.curFolderNode = self.curFolderNode.cd_to_path(dir)
         self.cv_current_dir = '/'+os.path.relpath(os.path.abspath(self.cv_location+self.cv_current_dir), self.cv_location)+'/'
         if self.cv_current_dir == '/./':
             self.cv_current_dir='/'
