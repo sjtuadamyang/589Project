@@ -33,6 +33,7 @@ class cloudview:
 
     def sync(self):
         __retrieve_ser_metadata()
+        
          
 
     def __retrieve_ser_metadata(self):
@@ -177,6 +178,8 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
+    cv.add('~/test.txt', 'dgr')
+    cv.add('~/test.txt', 'box')
     cv.retrieve_ser_metadata()
 
 if __name__ == "__main__":
