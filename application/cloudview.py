@@ -30,7 +30,7 @@ class folderNode:
         components = path.split(os.sep)
         curNode = self
         index = 1
-        while index < len(components)-1:
+        while index < len(components):
             try:
                 find = curNode.childNodes.index(components[index])
                 curNode = curNode.childNodes[find]
@@ -90,7 +90,7 @@ class cloudview:
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
             self.local_file = self.__get_filelist(self.metadata)
             for file in self.local_file:
-                folderTree.add_child_path(file['fullpath'])
+                self.folderRoot.add_child_path(os.path.dirname(file['fullpath']))
             print "local view is at stamp: " + str(self.metadata.view[0]['ts'])
         except IOError:
             print 'no file named metadata.xml'
@@ -104,8 +104,8 @@ class cloudview:
         print len(self.server_file)
         i = 0
         j = 0
-        while i < len(local_file) and j < len(server_file)
-            if local_file[i]['id'] 
+        """while i < len(local_file) and j < len(server_file):
+            if local_file[i]['id']"""
     
     def __get_filelist(self, metadata):
         if isinstance(metadata, boxdotnet.XMLNode):
@@ -133,7 +133,7 @@ class cloudview:
             if file['fullpath'] == self.cv_current_dir + file['title']:
                 list += ' '+file['title']
         childlist = self.curFolderNode.get_child()
-        for dir in self.childlist:
+        for dir in childlist:
             list += ' '+dir.name
 
     def add(self, filename, primary):
