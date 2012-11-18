@@ -54,14 +54,25 @@ class cloudview:
         print list
         return list
 
-    def add(self, filename):
+    def add(self, filename, primary):
         """not implemented yet"""
         #filename need to be absolute address
         title = os.path.basename(filename)
         #transfer title into abs address
         fspath = self.cv_location+self.cv_current_dir +title
         command = 'cp '+filename+' '+fspath
+        if not os.path.isfile(filename):
+            raise Exception(CVError, "file not exist")
+        #print command
         os.system(command)
+        try:
+            getattr(self.metadata.view[0], 'file')
+        except AttributeError:
+            setattr(self.metadata.view[0], 'file', [])
+        for file in self.metadata.view[0].file:
+            if file['fullpath'] == self.cv_current_dir+title:
+                file['ts']=str(int(time.time()))
+                print self.metadata.convertXML()
         #add file information to metalist
         file = boxdotnet.XMLNode() 
         file.elementName = 'file'
@@ -69,18 +80,25 @@ class cloudview:
         file['id']=self.metadata.view[0]['cur_id']
         file['fullpath']=self.cv_current_dir+title
         file['ts']=str(int(time.time()))
+
+        prime = boxdotnet.XMLNode()
+        prime.elementName = 'primary'
+        prime['type']=primary
+        prime['file_id']=''
+        prime['download_url']=''
+        setattr(file, 'primary', [])
+        file.primary.append(prime)
         self.metadata.view[0]['cur_id']=str(int(self.metadata.view[0]['cur_id'])+1)
         self.metadata.view[0]['ts']=file['ts']
-        try:
-            getattr(self.metadata.view[0], 'file')
-        except AttributeError:
-            setattr(self.metadata.view[0], 'file', [])
         self.metadata.view[0].file.append(file)
         print self.metadata.convertXML()
 
     def mkdir(self, dirname):
         fspath = self.cv_location+self.cv_current_dir+dirname
         title = os.path.basename(dirname)
+        if os.path.exists(fspath):
+            raise Exception(CVError, "path already exist")
+        
         if not title==dirname:
             raise Exception(CVError, "filename can not be a path name")
         command = 'mkdir '+fspath
