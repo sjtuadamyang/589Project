@@ -32,11 +32,16 @@ class cloudview:
         self.cv_current_dir = '/'
 
     def sync(self):
-        """create folder
-            compare metadata lists, choose to upload or download according to the timestamp"""
+        __retrieve_ser_metadata()
+         
 
-    def retrieve_ser_metadata(self):
+    def __retrieve_ser_metadata(self):
         """get the most updated server metadata"""
+        boxmeta = self.client_box.getmetadata()
+        box_ts = -1 if (boxmeta==None) else int(boxmeta.view[0]['ts'])
+        gdrmeta = self.client_gd.retrieve_metadata()
+        gdr_ts = -1 if (gdrmeta==None) else int(gdrmeta.view[0]['ts'])
+        self.ser_metadata = boxmeta if (box_ts>gdr_ts) else gdrmeta 
 
     def ls(self):
         """not implemented yet"""
@@ -172,12 +177,7 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    #cv.add('~/test.txt', 'gdr')
-    cv.ls()
-    cv.mkdir('a')
-    cv.cd('a')
-    #cv.add('~/test.txt', 'dbox')
-    cv.write_meta()
+    cv.retrieve_ser_metadata()
 
 if __name__ == "__main__":
     main()

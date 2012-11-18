@@ -62,7 +62,7 @@ class GOOGLE_VIEW:
             raise NeedLoginException(None)
         resp, content = self.Drive_Service._http.request(download_url)
         if resp.status == 200:
-            print 'Download Succeed'
+            #print 'Download Succeed'
             if path == 'metadata.xml':
                 self.metadata = XMLNode.parseXML(content, True)
                 return self.metadata
@@ -92,12 +92,13 @@ class GOOGLE_VIEW:
             except errors.HttpError, error:
                 print 'An error occurred: %s' % error
                 break
-        print 'titles in google drive'
+        #print 'titles in google drive'
         for tmp in result:
-            print tmp['title']
+            #print tmp['title']
             if tmp['title'] == 'metadata.xml':
                 return (self.download_file(tmp['downloadUrl'], 'metadata.xml'))
                 break
+        return None
 
     def upload(self, title, filename):
         if  not self.Drive_Service: 
