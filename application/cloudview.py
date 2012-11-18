@@ -62,7 +62,7 @@ class cloudview:
         #transfer title into abs address
         fspath = self.cv_location+self.cv_current_dir +title
         command = 'cp '+filename+' '+fspath
-        if not os.path.isfile(filename):
+        if not os.path.isfile(os.path.expanduser(filename)):
             raise Exception(CVError, "file not exist")
         #print command
         os.system(command)
