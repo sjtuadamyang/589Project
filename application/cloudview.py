@@ -20,10 +20,17 @@ class folderNode:
     def get_child(self):
         ret = ''
         for item in self.childNodes:
-            ret += ' '+self.childNodes.name 
+            ret += item.name+' '
         return ret
+    def print_tree(self):
+        print self.get_child()
+        print '\n'
+        for item in self.childNodes:
+            item.print_tree()      
+
     def add_child(self, name):
         child = folderNode(name)
+        child.parent = self
         self.childNodes.append(child)
         return child
     def add_child_path(self, path):
@@ -39,6 +46,12 @@ class folderNode:
                 curNode = newNode 
             index+=1
     def cd_to_path(self, dir):
+        if dir == '..':
+            try:
+                getattr(self, 'parent')
+            except AttributeError:
+                raise Exception(CVError, "no parent for current dir")
+            return self.parent
         for item in self.childNodes:
             if item.name == dir:
                 return item
@@ -129,15 +142,17 @@ class cloudview:
 
     def ls(self):
         """not implemented yet"""
+        print "current tree is : "
+        self.folderRoot.print_tree()
         list = '' 
         if not self.initialized:
             raise Exception(CVError, "application not initialized")
         for file in self.metadata.view[0].file:
             if file['fullpath'] == self.cv_current_dir + file['title']:
-                list += ' '+file['title']
-        childlist = self.curFolderNode.get_child()
-        for dir in childlist:
-            list += ' '+dir.name
+                list += file['title']+' '
+        print "curFolderNode name is"+str(self.curFolderNode.name)
+        list += self.curFolderNode.get_child()
+        print list
 
     def add(self, filename, primary):
         """not implemented yet"""
@@ -188,7 +203,8 @@ class cloudview:
             raise Exception(CVError, "filename can not be a path name")
         command = 'mkdir '+fspath
         os.system(command)
-        self.folderRoot.add_child_path(self.cv_current_dir+dirname)
+        self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
+        print str(self.cv_current_dir+dirname+'/')
 
     def delete(self, filename):
         """not implemented yet"""
@@ -267,7 +283,6 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    print 'aaa'
     cv.run()
 
 if __name__ == "__main__":
