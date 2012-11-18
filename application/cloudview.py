@@ -11,20 +11,57 @@ class CVError(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value)
+    
+class folderNode:
+    childNodes = []
+    name = ''
+    def __init__(self, name):
+        self.name = name 
+    def get_child(self):
+        ret = ''
+        for item in self.childNodes:
+            ret += ' '+self.childNodes.name 
+        return ret
+    def add_child(self, name):
+        child = folderNode(name)
+        childNodes.append(child)
+        return child
+    def add_child_path(self, path):
+        components = path.split(os.sep)
+        curNode = self
+        index = 1
+        while index < len(components)-1:
+            try:
+                find = curNode.childNodes.index(components[index])
+                curNode = curNode.childNodes[find]
+            except ValueError:
+                newNode = curNode.add_child(components[index])
+                curNode = newNode 
+    def cd_to_path(self, dir):
+        for item in self.childNodes:
+            if item.name == dir:
+                return item
 
 class cloudview:
     client_box = boxdotnet.BoxDotNet()
     client_gd = gdr_yyt.GOOGLE_VIEW()
     metadata = ''
     ser_metadata = ''
+    local_file = []
+    server_file = []
     cv_location = ''
     cv_current_dir = ''
     initialized = False
+    folderRoot = folderNode('/')
+    curFolderNode = folderRoot
 
     def __init__(self):
         try:
             f = open('./metadata.xml', 'rb')
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
+            self.local_file = self.__get_filelist(self.metadata)
+            for file in self.local_file:
+                folderTree.add_child_path(file['fullpath'])
             print "local view is at stamp: " + str(self.metadata.view[0]['ts'])
         except IOError:
             print 'no file named metadata.xml'
@@ -32,9 +69,23 @@ class cloudview:
         self.cv_current_dir = '/'
 
     def sync(self):
-        __retrieve_ser_metadata()
-        
-         
+        self.__retrieve_ser_metadata()
+        self.server_file = self.__get_filelist(self.ser_metadata) 
+        print len(self.local_file)
+        print len(self.server_file)
+        i = 0
+        j = 0
+        while i < len(local_file) and j < len(server_file)
+            if local_file[i]['id'] 
+    
+    def __get_filelist(self, metadata):
+        if isinstance(metadata, boxdotnet.XMLNode):
+            try:
+                getattr(metadata.view[0], 'file')
+            except AttributeError:
+                return []
+            return metadata.view[0].file
+        return []
 
     def __retrieve_ser_metadata(self):
         """get the most updated server metadata"""
@@ -51,9 +102,10 @@ class cloudview:
             raise Exception(CVError, "application not initialized")
         for file in self.metadata.view[0].file:
             if file['fullpath'] == self.cv_current_dir + file['title']:
-                list += '\n'+file['title']
-        print list
-        return list
+                list += ' '+file['title']
+        childlist = self.curFolderNode.get_child()
+        for dir in self.childlist:
+            list += ' '+dir.name
 
     def add(self, filename, primary):
         """not implemented yet"""
@@ -178,9 +230,7 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    cv.add('~/test.txt', 'dgr')
-    cv.add('~/test.txt', 'box')
-    cv.retrieve_ser_metadata()
+    cv.sync()
 
 if __name__ == "__main__":
     main()
