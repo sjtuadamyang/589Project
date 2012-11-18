@@ -68,7 +68,7 @@ class cloudview:
         """not implemented yet"""
         title = os.path.basename(filename)
         if not title==filename:
-            print 'delete can only delete files under current directory'
+            raise Exception(CVError, "filename can not be a path name")
         #transfer filename into absolute address
         title = self.cv_location+self.cv_current_dir+title
         command = 'rm '+title
@@ -85,6 +85,13 @@ class cloudview:
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
             raise Exception(CVError, "dir not exist")
         self.cv_current_dir = self.cv_current_dir + dir
+
+    def write_meta(self):
+        f = open('metadata.xml', 'wb')
+        if not f:
+            raise Exception(CVError, "metadata.xml not exist")
+        f.write(self.metadata.convertXML())
+        f.close
 
     def init(self):
         """all the client do authentication"""
@@ -119,7 +126,6 @@ class cloudview:
         self.initialized = True
 
     def featureTest(self):
-    
         """metaNode_1 = self.client_box.getmetadata()    
         self.client_gd.upload('metadata.xml', 'metadata.xml')
         metaNode_2 = self.client_gd.retrieve_metadata()    
@@ -132,10 +138,8 @@ def main():
     cv = cloudview() 
     cv.init()
     cv.add('~/test.txt')
-    cv.add('~/test.txt')
     cv.ls()
-    #cv.delete('test.txt')
-
+    cv.write_meta()
 
 if __name__ == "__main__":
     main()
