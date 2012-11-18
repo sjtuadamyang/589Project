@@ -16,6 +16,7 @@ class cloudview:
     client_box = boxdotnet.BoxDotNet()
     client_gd = gdr_yyt.GOOGLE_VIEW()
     metadata = ''
+    ser_metadata = ''
     cv_location = ''
     cv_current_dir = ''
     initialized = False
@@ -33,6 +34,9 @@ class cloudview:
     def sync(self):
         """create folder
             compare metadata lists, choose to upload or download according to the timestamp"""
+
+    def retrieve_ser_metadata(self):
+        """get the most updated server metadata"""
 
     def ls(self):
         """not implemented yet"""
