@@ -33,25 +33,36 @@ class cloudview:
         list = '' 
         if not self.initialized:
             raise Exception(CVError, "application not initialized")
-        for file in metadata.view[0].file:
-            if file['fullpath'] == cv_current_dir + file['title']:
-                list += '\n'+file[title]
+        for file in self.metadata.view[0].file:
+            if file['fullpath'] == self.cv_current_dir + file['title']:
+                list += '\n'+file['title']
+        print list
         return list
 
-    def add(self, filename, primary):
+    def add(self, filename):
         """not implemented yet"""
         #filename need to be absolute address
         title = os.path.basename(filename)
         #transfer title into abs address
-        title = cv_location+cv_current_dir +title
-        command = 'cp '+filename+' '+title
+        fspath = self.cv_location+self.cv_current_dir +title
+        command = 'cp '+filename+' '+fspath
         os.system(command)
         #add file information to metalist
+        file = boxdotnet.XMLNode() 
+        file.elementName = 'file'
         file['title']=title
-        file['id']=metadata['id']
+        file['id']=self.metadata.view[0]['cur_id']
+        file['fullpath']=self.cv_current_dir+title
         file['ts']=str(int(time.time()))
-        metadata['id']=str(int(metadata['id'])+1)
-        metadata.view[0].file.append(file)
+        self.metadata.view[0]['cur_id']=str(int(self.metadata.view[0]['cur_id'])+1)
+        self.metadata.view[0]['ts']=file['ts']
+        try:
+            getattr(self.metadata.view[0], 'file')
+        except AttributeError:
+            setattr(self.metadata.view[0], 'file', [])
+        self.metadata.view[0].file.append(file)
+        print self.metadata.convertXML()
+
 
     def delete(self, filename):
         """not implemented yet"""
@@ -59,14 +70,16 @@ class cloudview:
         if not title==filename:
             print 'delete can only delete files under current directory'
         #transfer filename into absolute address
-        title = cv_location+cv_current_dir+title
+        title = self.cv_location+self.cv_current_dir+title
         command = 'rm '+title
         os.system(command)
+        #bug: if file does not exist
         #delete entry in metadatalist
-        for file in metadata.view[0].file:
-            if file['fullpath'] == cv_current_dir+title:
+        for file in self.metadata.view[0].file:
+            if file['fullpath'] == self.cv_current_dir+filename:
                 #delete
-                metadata.view[0].file.remove(file)
+                self.metadata.view[0].file.remove(file)
+        print self.metadata.convertXML()
 
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
@@ -118,7 +131,11 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    cv.featureTest()
+    cv.add('~/test.txt')
+    cv.add('~/test.txt')
+    cv.ls()
+    #cv.delete('test.txt')
+
 
 if __name__ == "__main__":
     main()

@@ -86,7 +86,7 @@ class XMLNode:
                 element.setAttribute(ab, inst[ab])
             for an in inst.__dict__.keys():
                 attr = inst.__dict__[an]
-                if isinstance(attr, list) and isinstance(attr[0], XMLNode):
+                if isinstance(attr, list) and attr and isinstance(attr[0], XMLNode):
                     for child in attr:
                         __recursive_create(doc, element, child)
         doc = Document()
