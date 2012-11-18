@@ -2,10 +2,5 @@
 <metadata>
     <view cur_id="3" ts="1353262189">
         <file fullpath="/test.txt" id="0" title="test.txt" ts="1353262153"/>
-            <primary type='dbox/box/gdr' file_id='' download_url=''>
-            <backup>
-            <backup>
-        <file fullpath="/test.txt" id="1" title="test.txt" ts="1353262189"/>
-        <file fullpath="/a/test.txt" id="2" title="test.txt" ts="1353262189"/>
     </view>
 </metadata>
