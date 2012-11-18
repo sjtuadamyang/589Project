@@ -67,8 +67,7 @@ class cloudview:
         fspath = self.cv_location+self.cv_current_dir+dirname
         title = os.path.basename(dirname)
         if not title==dirname:
-            #raise expection
-            """"""
+            raise Exception(CVError, "filename can not be a path name")
         command = 'mkdir '+fspath
         os.system(command)
 
@@ -92,7 +91,7 @@ class cloudview:
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
             raise Exception(CVError, "dir not exist")
-        self.cv_current_dir = self.cv_current_dir + dir
+        self.cv_current_dir = self.cv_current_dir + dir + '/'
 
     def write_meta(self):
         f = open('metadata.xml', 'wb')
