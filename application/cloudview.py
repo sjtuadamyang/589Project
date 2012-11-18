@@ -49,7 +49,7 @@ class cloudview:
         print list
         return list
 
-    def add(self, filename):
+    def add(self, filename, primary):
         """not implemented yet"""
         #filename need to be absolute address
         title = os.path.basename(filename)
@@ -64,6 +64,14 @@ class cloudview:
         file['id']=self.metadata.view[0]['cur_id']
         file['fullpath']=self.cv_current_dir+title
         file['ts']=str(int(time.time()))
+
+        prime = boxdotnet.XMLNode()
+        prime.elementName = 'primary'
+        prime['type']=primary
+        prime['file_id']=''
+        prime['download_url']=''
+        setattr(file, 'primary', [])
+        file.primary.append(prime)
         self.metadata.view[0]['cur_id']=str(int(self.metadata.view[0]['cur_id'])+1)
         self.metadata.view[0]['ts']=file['ts']
         try:
@@ -154,11 +162,11 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
-    cv.add('~/test.txt')
+    cv.add('~/test.txt', 'gdr')
     cv.ls()
     cv.mkdir('a')
     cv.cd('a')
-    cv.add('~/test.txt')
+    cv.add('~/test.txt', 'dbox')
     cv.write_meta()
 
 if __name__ == "__main__":
