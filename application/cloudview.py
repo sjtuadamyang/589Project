@@ -155,6 +155,9 @@ class cloudview:
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
             raise Exception(CVError, "dir not exist")
         self.cv_current_dir = self.cv_current_dir + dir + '/'
+        self.cv_current_dir = '/'+os.path.relpath(os.path.abspath(self.cv_location+self.cv_current_dir), self.cv_location)+'/'
+        if self.cv_current_dir == '/./':
+            self.cv_current_dir='/'
 
     def write_meta(self):
         f = open('metadata.xml', 'wb')
