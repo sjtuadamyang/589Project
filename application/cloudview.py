@@ -48,7 +48,7 @@ class cloudview:
             print 'Existing CloudView'
             return
         print 'Command Not Exists'
-        print 'Commands: sync; ls; add filename drive; delete filename; mdir dir; cd dir; exit'
+        print 'Commands:\nsync:\t\t\tsyncnize between server and local\nls:\t\t\tlist all the files\nadd filename drive:\tadd new file to the current directory\ndelete filename:\tdelete file under current directory\nmkdir dir:\t\tmake new directory under current directory\ncd dir:\t\t\tgoto certain directory\nexit:\t\t\texit CloudView'
 
     def __init__(self):
         try:
