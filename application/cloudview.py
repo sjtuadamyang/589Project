@@ -23,7 +23,8 @@ class cloudview:
 
     def run(self):
       while (1):
-        command = raw_input('Cloudview>>')
+        tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
+        command = raw_input(tmp_string)
         command = command.split()
         if command[0] == 'sync':
             self.sync()
