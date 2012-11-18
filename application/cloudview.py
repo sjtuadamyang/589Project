@@ -185,6 +185,7 @@ class cloudview:
             raise Exception(CVError, "filename can not be a path name")
         command = 'mkdir '+fspath
         os.system(command)
+        self.folderRoot.add_child_path(self.cv_current_dir+dirname)
 
     def delete(self, filename):
         """not implemented yet"""
