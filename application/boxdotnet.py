@@ -152,6 +152,7 @@ class BoxDotNet(object):
     END_POINT = 'http://www.box.net/api/1.0/rest?'
     API_KEY = '9cluykmx5i2filqz202p1t5frptgtjwn'
     authenticated = True
+    metadata_id = None
     token = ''
 
     #The box.net return status codes are all over the show
@@ -373,12 +374,20 @@ class BoxDotNet(object):
         f.close()"""
 
     def getmetadata(self):
-        list_tree = self.__listfile()
-        file_list = list_tree.tree[0].folder[0].files[0].file
         metaNode = None
-        for f in file_list:
-            if f["file_name"] == "metadata.xml":
-                meta_id = f["id"]
-                metaNode = XMLNode.parseXML(self.download(meta_id))
+        if self.metadata_id == None:
+            list_tree = self.__listfile()
+            file_list = list_tree.tree[0].folder[0].files[0].file
+            for f in file_list:
+                if f["file_name"] == "metadata.xml":
+                    self.metadata_id = f["id"]
+                    metaNode = XMLNode.parseXML(self.download(self.metadata_id))
+        else:
+            metaNode = XMLNode.parseXML(self.download(self.metadata_id))
         return metaNode
+
+    def setmetadata(self, meta_path):
+        if self.metadata_id == None:
+            raise BoxDotNetError("we do not have metadata id stored")
+        self.replace(self.metadata_id, meta_path)  
         
