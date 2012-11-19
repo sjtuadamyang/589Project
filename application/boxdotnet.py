@@ -249,7 +249,7 @@ class BoxDotNet(object):
 
     #-------------------------------------------------------------------
     #-------------------------------------------------------------------
-    def upload(self, title, path):
+    def upload(self, path):
         """
         Upload a file to box.net.
         """
@@ -257,14 +257,55 @@ class BoxDotNet(object):
         if not self.authenticated:
             raise UploadException("application not authenticated")
 
-        if title == None:
-            raise UploadException("filename OR jpegData must be specified")
-
         url = 'http://upload.box.net/api/1.0/upload/%s/%s' % (self.token, '0')
 
         # construct POST data
         boundary = mimetools.choose_boundary()
         body = ""
+        title = os.path.basename(path)
+
+        # filename
+        body += "--%s\r\n" % (boundary)
+        body += 'Content-Disposition: form-data; name="share"\r\n\r\n'
+        body += "%s\r\n" % ('1')
+
+        body += "--%s\r\n" % (boundary)
+        body += "Content-Disposition: form-data; name=\"file\";"
+        body += " filename=\"%s\"\r\n" % title
+        body += "Content-Type: %s\r\n\r\n" % get_content_type(title)
+
+        #print body
+
+        fp = file(path, "rb")
+        data = fp.read()
+        fp.close()
+
+        postData = body.encode("utf_8") + data + \
+            ("\r\n--%s--" % (boundary)).encode("utf_8")
+
+        request = urllib2.Request(url)
+        request.add_data(postData)
+        request.add_header("Content-Type", \
+            "multipart/form-data; boundary=%s" % boundary)
+        response = urllib2.urlopen(request)
+        rspXML = response.read()
+
+        print rspXML
+        rspNode = XMLNode()
+        rspNode = XMLNode.parseXML(rspXML)
+        return int(rspNode.files[0].file[0]['id'])
+    
+    def replace(self, file_id, path):
+        # check authentication
+        if not self.authenticated:
+            raise UploadException("application not authenticated") 
+
+        url = 'http://upload.box.net/api/1.0/overwrite/%s/%s' % (self.token, file_id)
+        
+        # construct POST data
+        boundary = mimetools.choose_boundary()
+        body = ""
+        title = os.path.basename(path)
 
         # filename
         body += "--%s\r\n" % (boundary)
@@ -294,7 +335,7 @@ class BoxDotNet(object):
 
         print rspXML
         return XMLNode.parseXML(rspXML)
-    
+
     def __listfile(self):
 
         url = 'https://www.box.net/api/1.0/rest?action=get_account_tree&api_key=%s&auth_token=%s&folder_id=%s&params[]=onelevel&params[]=nozip' %(self.API_KEY, self.token, 0)
