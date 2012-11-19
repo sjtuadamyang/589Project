@@ -1,3 +1,4 @@
 GOOGLE_CREDENTIAL
 *.pyc
 metadata.xml
+/test_folder/*
