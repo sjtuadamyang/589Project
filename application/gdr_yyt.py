@@ -4,6 +4,7 @@ import glob
 import httplib2
 import pprint
 import logging
+import os.path
 import oauth2client.client
 import webbrowser
 from boxdotnet import XMLNode
@@ -28,6 +29,7 @@ class GOOGLE_VIEW:
     CLIENT_SECRET = 'eZmvRwEGtJkXQRdsvsz1DQhS'
     CLIENT_ID = '1021813612028.apps.googleusercontent.com'
     Drive_Service = False
+    metadata_id = ''
     credentials = None
     def __init__(self):
        if glob.glob('GOOGLE_CREDENTIAL'):
@@ -57,7 +59,7 @@ class GOOGLE_VIEW:
         http = self.credentials.authorize(http)
         self.Drive_Service = build('drive', 'v2', http=http)
 
-    def download_file(self, download_url, path):
+    def download(self, download_url, path):
         if  not self.Drive_Service: 
             raise NeedLoginException(None)
         resp, content = self.Drive_Service._http.request(download_url)
@@ -74,11 +76,13 @@ class GOOGLE_VIEW:
             print 'Download Failed'
 
 
-    def retrieve_metadata(self):
+    def getmetadata(self):
         if  not self.Drive_Service: 
             raise NeedLoginException(None)
         result = []
         page_token = None
+        if not self.metadata_id == '':
+            return (self.download(tmp['downloadUrl'], 'metadata.xml'))
         while True:
             try:
                 param = {}
@@ -96,15 +100,20 @@ class GOOGLE_VIEW:
         for tmp in result:
             #print tmp['title']
             if tmp['title'] == 'metadata.xml':
-                return (self.download_file(tmp['downloadUrl'], 'metadata.xml'))
+                self.metadata_id = tmp['id']
+                return (self.download(tmp['downloadUrl'], 'metadata.xml'))
                 break
         return None
 
-    def upload(self, title, filename):
+    def setmetadata(self, path):
+        self.replace(self.metadata_id, path)
+
+    def upload(self, path):
         if  not self.Drive_Service: 
             raise NeedLoginException(None)
         # upload a file
-        media_body = MediaFileUpload(filename, mimetype='text/plain', resumable=True)
+        title = os.path.basename(path)
+        media_body = MediaFileUpload(path, mimetype='text/plain', resumable=True)
         body = {
             'title': title,
             'mimeType': ''
@@ -117,4 +126,15 @@ class GOOGLE_VIEW:
         if  not self.Drive_Service: 
             raise NeedLoginException(None)
         self.Drive_Service.files().delete(fileId=file_id).execute() 
+
+    def replace(self, file_id, path):
+        try:
+            file=self.Drive_Service.files().get(fileID=file_id).execute()
+            title = os.path.basename(path)
+            media_body = MediaFileUpload(path, resumable=True)
+            updated_file = self.Drive_Service.files().update(fileId=file_id, body=file, newRevision=False, media_body=media_body).execute()
+            return updated_file
+        except errors.HttpError, error:
+            print "An error occured: %s" % error
+            return None
 

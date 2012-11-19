@@ -70,7 +70,7 @@ class folderNode:
 
 class cloudview:
     client_box = boxdotnet.BoxDotNet()
-    client_gd = gdr_yyt.GOOGLE_VIEW()
+    client_gdr = gdr_yyt.GOOGLE_VIEW()
     metadata = ''
     ser_metadata = ''
     local_file = []
@@ -84,8 +84,8 @@ class cloudview:
     def run(self):
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
-        command = raw_input(tmp_string)
-        command = command.split()
+        command0 = raw_input(tmp_string)
+        command = command0.split()
         if command[0] == 'sync':
             self.sync()
             continue
@@ -107,8 +107,9 @@ class cloudview:
         if command[0] == 'exit':
             print 'Existing CloudView'
             return
-        print 'Command Not Exists'
-        print 'Commands:\nsync:\t\t\tsyncnize between server and local\nls:\t\t\tlist all the files\nadd filename drive:\tadd new file to the current directory\ndelete filename:\tdelete file under current directory\nmkdir dir:\t\tmake new directory under current directory\ncd dir:\t\t\tgoto certain directory\nexit:\t\t\texit CloudView'
+        os.system(command0)
+        #print 'Command Not Exists'
+        #print 'Commands:\nsync:\t\t\tsyncnize between server and local\nls:\t\t\tlist all the files\nadd filename drive:\tadd new file to the current directory\ndelete filename:\tdelete file under current directory\nmkdir dir:\t\tmake new directory under current directory\ncd dir:\t\t\tgoto certain directory\nexit:\t\t\texit CloudView'
 
     def __init__(self):
         try:
@@ -142,7 +143,7 @@ class cloudview:
                     if local_entry.primary[0]['type']=='box':
                         self.client_box.replace(local_entry.primary['file_id'], cv_location+local_entry['fullpath'])
                     if local_entry.primary[0]['type']=='gdr':
-                        self.client_gd.replace(local_entry.primary['file_id'], cv_location+local_entry['fullpath'])
+                        self.client_gdr.replace(local_entry.primary['file_id'], cv_location+local_entry['fullpath'])
                 if int(local_entry['ts'])<int(server_entry['ts']):
                     #download from server
                     if local_entry.primary[0]['type']=='box':
@@ -212,6 +213,8 @@ class cloudview:
             f.close()
         else:
             #upload self.metalist to all servers
+            self.client_gdr.setmetadata('metadata.txt')
+            self.client_box.setmetadata('metadata.txt')
 
 
     def __get_filelist(self, metadata):
@@ -227,7 +230,7 @@ class cloudview:
         """get the most updated server metadata"""
         boxmeta = self.client_box.getmetadata()
         box_ts = -1 if (boxmeta==None) else int(boxmeta.view[0]['ts'])
-        gdrmeta = self.client_gd.retrieve_metadata()
+        gdrmeta = self.client_gdr.getmetadata()
         gdr_ts = -1 if (gdrmeta==None) else int(gdrmeta.view[0]['ts'])
         self.ser_metadata = boxmeta if (box_ts>gdr_ts) else gdrmeta 
 
@@ -311,6 +314,7 @@ class cloudview:
             if file['fullpath'] == self.cv_current_dir+filename:
                 #delete
                 self.metadata.view[0].file.remove(file)
+        self.metadata.view[0]['ts']=str(int(time.time()))
         print self.metadata.convertXML()
 
     def cd(self, dir):
@@ -333,8 +337,8 @@ class cloudview:
         """all the client do authentication"""
         if not self.client_box.authenticated:
             self.client_box.authenticate()
-        if not self.client_gd.Drive_Service:
-            self.client_gd.authent()
+        if not self.client_gdr.Drive_Service:
+            self.client_gdr.authent()
 
         if self.metadata == '':
             #init a empty metadata file
