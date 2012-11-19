@@ -298,6 +298,9 @@ class cloudview:
         command = 'mkdir '+fspath
         os.system(command)
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
+        self.cd(dirname)
+        self.add(self.cv_location+'.av', 'box')
+        self.cd('../')
 
     def delete(self, filename):
         """not implemented yet"""
