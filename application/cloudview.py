@@ -266,7 +266,9 @@ class cloudview:
         for file in self.metadata.view[0].file:
             if file['fullpath'] == self.cv_current_dir+title:
                 file['ts']=str(int(time.time()))
+                self.metadata.view[0]['ts']=file['ts']
                 print self.metadata.convertXML()
+                return
         #add file information to metalist
         file = boxdotnet.XMLNode() 
         file.elementName = 'file'
