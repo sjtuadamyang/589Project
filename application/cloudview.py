@@ -131,9 +131,53 @@ class cloudview:
         print len(self.server_file)
         i = 0
         j = 0
-        """while i < len(local_file) and j < len(server_file):
-            if local_file[i]['id']"""
-    
+        l_ts = int(self.metadata.view[0]['ts'])
+        s_ts = int(self.ser_metadata.view[0]['ts'])
+        while (i < len(self.local_file) and j < len(self.server_file)):
+            local_entry = self.local_file[i]
+            server_entry = self.server_file[j]
+            if local_entry['id'] == server_entry['id']:
+                if int(local_entry['ts'])>int(server_entry['ts']):
+                    #upload to server and check box_id
+                    if local_entry.primary[0]['type']=='box':
+                        self.client_box.upload(local_entry['title'], cv_location+local_entry['fullpath'])
+                    if local_entry.primary[0]['type']=='gdr':
+                        #self.client_gd.
+                if int(local_entry['ts'])<int(server_entry['ts']):
+                    #download from server
+                    
+                i=i+1
+                j=j+1
+                continue
+            if local_entry['id'] > server_entry['id']:
+                """"""
+                if l_ts>s_ts:
+                    #delete server files
+                else:
+                    #download from server
+                j=j+1
+                continue
+            if local_entry['id'] < server_entry['id']:
+                """"""
+                #delete local files
+                i=i+1
+        
+        if i<len(self.local_file):
+            if l_ts<s_ts:
+                #delete all remain files
+            else:
+                #upload all remain files
+        if j<len(self.server_file):
+            if l_ts<s_ts:
+                #download all remaining files
+            else:
+                #delete all remaining files
+        #sync metalist
+        if l_ts<s_ts:
+            self.metalist = self.ser_metadata
+        else:
+            #upload self.metalist to all servers
+
     def __get_filelist(self, metadata):
         if isinstance(metadata, boxdotnet.XMLNode):
             try:
