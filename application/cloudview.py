@@ -124,8 +124,6 @@ class cloudview:
             print 'no file named metadata.xml'
         self.cv_location = os.path.dirname(os.path.realpath(__file__))
         self.cv_current_dir = '/'
-        os.system('touch .av')
-        self.add('.av', 'box')
 
     def sync(self):
         self.__retrieve_ser_metadata()
@@ -369,6 +367,9 @@ class cloudview:
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
+            os.system('touch .av')
+            self.add('.av', 'box')
+
         self.initialized = True
 
     def featureTest(self):
