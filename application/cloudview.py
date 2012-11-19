@@ -17,15 +17,19 @@ class folderNode:
     name = ''
     def __init__(self, name):
         self.name = name 
+        self.childNodes = []
     def get_child(self):
         ret = ''
         for item in self.childNodes:
             ret += item.name+' '
         return ret
+
     def print_tree(self):
-        print self.get_child()
-        print '\n'
+        print "current level "+self.name
+        print 'length of childs: '+str(len(self.childNodes))
+        print ''
         for item in self.childNodes:
+            print "we get here"
             item.print_tree()      
 
     def add_child(self, name):
@@ -33,20 +37,27 @@ class folderNode:
         child.parent = self
         self.childNodes.append(child)
         return child
+
     def add_child_path(self, path):
         components = path.split(os.sep)
         curNode = self
         index = 1
         while index < len(components)-1:
-            try:
-                find = curNode.childNodes.index(components[index])
-                curNode = curNode.childNodes[find]
-            except ValueError:
+            #print "checking components "+components[index]
+            find = False 
+            for item in curNode.childNodes:
+                if item.name == components[index]:
+                    curNode = item
+                    find = True
+            if find == False:
+                #print "test: add a child "+components[index]+" at "+curNode.name     
                 newNode = curNode.add_child(components[index])
-                curNode = newNode 
-            index+=1
+                curNode = newNode
+            index += 1
+        #print "test: after adding node we curNode is "+curNode.name
+
     def cd_to_path(self, dir):
-        if dir == '..':
+        if dir == '..' or dir == '../':
             try:
                 getattr(self, 'parent')
             except AttributeError:
@@ -55,7 +66,7 @@ class folderNode:
         for item in self.childNodes:
             if item.name == dir:
                 return item
-        raise(CVError, "no dir found")
+        raise Exception(CVError, "no dir found")
 
 class cloudview:
     client_box = boxdotnet.BoxDotNet()
@@ -142,15 +153,15 @@ class cloudview:
 
     def ls(self):
         """not implemented yet"""
-        print "current tree is : "
-        self.folderRoot.print_tree()
+        #print "current tree is : "
+        #self.folderRoot.print_tree()
         list = '' 
         if not self.initialized:
             raise Exception(CVError, "application not initialized")
         for file in self.metadata.view[0].file:
             if file['fullpath'] == self.cv_current_dir + file['title']:
                 list += file['title']+' '
-        print "curFolderNode name is"+str(self.curFolderNode.name)
+        #print "curFolderNode name is"+str(self.curFolderNode.name)
         list += self.curFolderNode.get_child()
         print list
 
@@ -163,7 +174,7 @@ class cloudview:
         command = 'cp '+filename+' '+fspath
         if not os.path.isfile(os.path.expanduser(filename)):
             raise Exception(CVError, "file not exist")
-        #print command
+        print command
         os.system(command)
         try:
             getattr(self.metadata.view[0], 'file')
@@ -204,7 +215,6 @@ class cloudview:
         command = 'mkdir '+fspath
         os.system(command)
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
-        print str(self.cv_current_dir+dirname+'/')
 
     def delete(self, filename):
         """not implemented yet"""
@@ -284,6 +294,7 @@ def main():
     cv = cloudview() 
     cv.init()
     cv.run()
+    cv.write_meta()
 
 if __name__ == "__main__":
     main()
