@@ -140,11 +140,15 @@ class cloudview:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
                     if local_entry.primary[0]['type']=='box':
-                        self.client_box.upload(local_entry['title'], cv_location+local_entry['fullpath'])
+                        self.client_box.replace(local_entry.primary['file_id'], cv_location+local_entry['fullpath'])
                     if local_entry.primary[0]['type']=='gdr':
-                        #self.client_gd.
+                        self.client_gd.replace(local_entry.primary['file_id'], cv_location+local_entry['fullpath'])
                 if int(local_entry['ts'])<int(server_entry['ts']):
                     #download from server
+                    if local_entry.primary[0]['type']=='box':
+                        self.client_box.download(server_entry.primary['file_id'], cv_location+server_entry['fullpath'])
+                    if local_entry.primary[0]['type']=='gdr':
+                        self.client_gdr.download(server_entry.primary['download_url'], cv_location+server_entry['fullpath'])
                     
                 i=i+1
                 j=j+1
@@ -153,30 +157,62 @@ class cloudview:
                 """"""
                 if l_ts>s_ts:
                     #delete server files
+                    if server_entry.primary[0]['type']=='box':
+                        self.client_box.delete(server_entry.primary['file_id'])
+                    if server_entry.primary[0]['type']=='gdr':
+                        self.client_gdr.delete(server_entry.primary['file_id'])
                 else:
-                    #download from server
+                    #not possible, we need to raise an exception
+                    raise Exception(CVError, "l_ts < s_ts happended, something wrong with our logic")
                 j=j+1
                 continue
             if local_entry['id'] < server_entry['id']:
                 """"""
                 #delete local files
+                fullpath = self.cv_location + local_entry['fullpath']
+                os.system('rm '+fullpath)
                 i=i+1
+                continue
         
         if i<len(self.local_file):
-            if l_ts<s_ts:
-                #delete all remain files
-            else:
-                #upload all remain files
+            for index in range(i, len(self.local_file)-1):
+                local_entry = self.local_file[index]
+                if l_ts<s_ts:
+                    #delete all remain files
+                    fullpath = self.cv_location + local_entry['fullpath']
+                    os.system('rm '+fullpath)
+                else:
+                    #upload all remain files
+                    if local_entry.primary[0]['type']=='box':
+                        self.client_box.upload(local_entry['fullpath'])
+                    if local_entry.primary[0]['type']=='gdr':
+                        self.client_gdr.upload(local_entry['fullpath'])
+
         if j<len(self.server_file):
-            if l_ts<s_ts:
-                #download all remaining files
-            else:
-                #delete all remaining files
+            for index in range(j, len(self.server_file)-1):
+                server_entry = self.server_file[index]
+                if l_ts<s_ts:
+                    #download all remaining files
+                    if server_entry.primary[0]['type']=='box':
+                        self.client_box.download(server_entry['file_id'], cv_location+server_entry['fullpath'])
+                    if local_entry.primary[0]['type']=='gdr':
+                        self.client_gdr.download(server_entry['download_url'], cv_location+server_entry['fullpath'])
+                else:
+                    #delete all remaining files
+                    if server_entry.primary[0]['type']=='box':
+                        self.client_box.delete(server_entry['file_id'])
+                    if local_entry.primary[0]['type']=='gdr':
+                        self.client_gdr.delete(server_entry['file_id'])
         #sync metalist
         if l_ts<s_ts:
-            self.metalist = self.ser_metadata
+            self.metadata = self.ser_metadata
+            #write down to metadata.txt
+            f = open('metadata.txt', 'wb')
+            f.write(self.metadata.convertXML())
+            f.close()
         else:
             #upload self.metalist to all servers
+
 
     def __get_filelist(self, metadata):
         if isinstance(metadata, boxdotnet.XMLNode):

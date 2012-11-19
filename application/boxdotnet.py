@@ -164,6 +164,7 @@ class BoxDotNet(object):
         'create_folder'     :   'create_ok',
         'upload'            :   'upload_ok',
         'delete'            :   's_delete_node',
+        'delete_'            :   's_delete_node',
         'filelist'          :   'listing_ok'
     }
 
@@ -228,6 +229,8 @@ class BoxDotNet(object):
             def handler(_self = self, _method = method, **arg):
                 url = _self.END_POINT
                 arg["action"] = _method
+                if method == "delete_":
+                    arg["action"] = "delete"
                 postData = _self.__url_encode_params(params=arg)
                 print "--url---------------------------------------------"
                 print url
@@ -336,6 +339,12 @@ class BoxDotNet(object):
         print rspXML
         return XMLNode.parseXML(rspXML)
 
+    def delete(self, file_id):
+        # check authentication
+        if not self.authenticated:
+            raise UploadException("application not authenticated") 
+        self.delete_(api_key=self.API_KEY, auth_token=self.token, target="file", target_id=file_id)
+
     def __listfile(self):
 
         url = 'https://www.box.net/api/1.0/rest?action=get_account_tree&api_key=%s&auth_token=%s&folder_id=%s&params[]=onelevel&params[]=nozip' %(self.API_KEY, self.token, 0)
@@ -345,15 +354,20 @@ class BoxDotNet(object):
         rspXML = response.read()
         return XMLNode.parseXML(rspXML)
 
-    def __download(self, file_id):
+    def download(self, file_id, path):
 
         rsp = self.__listfile()
         #fileid = rsp.tree[0].folder[0].files[0].file[0]["id"] 
         url = 'https://www.box.net/api/1.0/download/%s/%s' %(self.token, file_id)
         request = urllib2.Request(url)
         response = urllib2.urlopen(request) 
-        rspXML = response.read()
-        return rspXML
+        rsp = response.read()
+        if path == None:
+            return rsp
+        else:
+            f = open(path, 'wb')
+            f.write(rsp)
+            f.close()
         """f = open(path, 'wb')
         f.write(rspXML) 
         f.close()"""
@@ -365,6 +379,6 @@ class BoxDotNet(object):
         for f in file_list:
             if f["file_name"] == "metadata.xml":
                 meta_id = f["id"]
-                metaNode = XMLNode.parseXML(self.__download(meta_id))
+                metaNode = XMLNode.parseXML(self.download(meta_id))
         return metaNode
         
