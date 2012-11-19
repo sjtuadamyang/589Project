@@ -129,7 +129,7 @@ class GOOGLE_VIEW:
 
     def replace(self, file_id, path):
         try:
-            file=self.Drive_Service.files().get(fileID=file_id).execute()
+            file=self.Drive_Service.files().get(fileId=file_id).execute()
             title = os.path.basename(path)
             media_body = MediaFileUpload(path, resumable=True)
             updated_file = self.Drive_Service.files().update(fileId=file_id, body=file, newRevision=False, media_body=media_body).execute()

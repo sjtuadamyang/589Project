@@ -118,7 +118,7 @@ class cloudview:
             self.local_file = self.__get_filelist(self.metadata)
             for file in self.local_file:
                 print os.path.dirname(file['fullpath'])
-                self.folderRoot.add_child_path(os.path.dirname(file['fullpath']))
+                self.folderRoot.add_child_path(os.path.dirname(file['fullpath']+'/'))
             print "local view is at stamp: " + str(self.metadata.view[0]['ts'])
         except IOError:
             print 'no file named metadata.xml'
@@ -126,14 +126,13 @@ class cloudview:
         self.cv_current_dir = '/'
 
     def sync(self):
-        self.__retrieve_ser_metadata()
+        s_ts = self.__retrieve_ser_metadata()
         self.server_file = self.__get_filelist(self.ser_metadata) 
         print len(self.local_file)
         print len(self.server_file)
         i = 0
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
-        s_ts = int(self.ser_metadata.view[0]['ts'])
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
@@ -185,9 +184,9 @@ class cloudview:
                 else:
                     #upload all remain files
                     if local_entry.primary[0]['type']=='box':
-                        self.client_box.upload(local_entry['fullpath'])
+                        self.client_box.upload(self.cv_location + local_entry['fullpath'])
                     if local_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.upload(local_entry['fullpath'])
+                        self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
 
         if j<len(self.server_file):
             for index in range(j, len(self.server_file)-1):
@@ -213,8 +212,8 @@ class cloudview:
             f.close()
         else:
             #upload self.metalist to all servers
-            self.client_gdr.setmetadata('metadata.txt')
-            self.client_box.setmetadata('metadata.txt')
+            self.client_gdr.setmetadata('metadata.xml')
+            self.client_box.setmetadata('metadata.xml')
 
 
     def __get_filelist(self, metadata):
@@ -229,10 +228,15 @@ class cloudview:
     def __retrieve_ser_metadata(self):
         """get the most updated server metadata"""
         boxmeta = self.client_box.getmetadata()
-        box_ts = -1 if (boxmeta==None) else int(boxmeta.view[0]['ts'])
+        box_ts = 0 if (boxmeta==None) else int(boxmeta.view[0]['ts'])
         gdrmeta = self.client_gdr.getmetadata()
-        gdr_ts = -1 if (gdrmeta==None) else int(gdrmeta.view[0]['ts'])
-        self.ser_metadata = boxmeta if (box_ts>gdr_ts) else gdrmeta 
+        gdr_ts = 0 if (gdrmeta==None) else int(gdrmeta.view[0]['ts'])
+        if box_ts > gdr_ts:
+            self.ser_metadata = boxmeta
+            return box_ts
+        else:
+            self.ser_metadata = gdrmeta
+            return gdr_ts
 
     def ls(self):
         """not implemented yet"""
