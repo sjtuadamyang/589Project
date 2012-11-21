@@ -353,6 +353,7 @@ class BoxDotNet(object):
         request = urllib2.Request(url) 
         response = urllib2.urlopen(request)
         rspXML = response.read()
+        print rspXML
         return XMLNode.parseXML(rspXML)
 
     def download(self, file_id, path):
@@ -377,7 +378,11 @@ class BoxDotNet(object):
         metaNode = None
         if self.metadata_id == None:
             list_tree = self.__listfile()
-            file_list = list_tree.tree[0].folder[0].files[0].file
+            file_list = []
+            try:
+                file_list = list_tree.tree[0].folder[0].files[0].file
+            except AttributeError:
+                pass
             for f in file_list:
                 if f["file_name"] == "metadata.xml":
                     self.metadata_id = f["id"]
