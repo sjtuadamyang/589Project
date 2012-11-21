@@ -133,6 +133,7 @@ class cloudview:
         i = 0
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
+        print l_ts, s_ts
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
@@ -306,7 +307,8 @@ class cloudview:
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
         self.cd(dirname)
         print self.cv_location+'.av'
-        self.add(self.cv_location+'/.av', 'box')
+        os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
+        self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
         self.cd('../')
 
     def delete(self, filename):
@@ -374,8 +376,8 @@ class cloudview:
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
-            os.system('touch .av')
-            self.add('.av', 'box')
+            #os.system('touch .av')
+            #self.add('.av', 'box')
 
         self.initialized = True
 
@@ -391,6 +393,7 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
+    cv.sync()
     cv.run()
     cv.write_meta()
 
