@@ -253,7 +253,7 @@ class BoxDotNet(object):
 
     #-------------------------------------------------------------------
     #-------------------------------------------------------------------
-    def upload(self, path):
+    def upload(self, path, id):
         """
         Upload a file to box.net.
         """
@@ -266,7 +266,7 @@ class BoxDotNet(object):
         # construct POST data
         boundary = mimetools.choose_boundary()
         body = ""
-        title = os.path.basename(path)
+        title = 'id_'+id + os.path.basename(path)
 
         # filename
         body += "--%s\r\n" % (boundary)
@@ -388,6 +388,6 @@ class BoxDotNet(object):
 
     def setmetadata(self, meta_path):
         if self.metadata_id == None:
-            raise BoxDotNetError("we do not have metadata id stored")
+            metadata_id = self.upload(self.meta_path, '0')
         self.replace(self.metadata_id, meta_path)  
         

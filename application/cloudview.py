@@ -184,7 +184,7 @@ class cloudview:
                 else:
                     #upload all remain files
                     if local_entry.primary[0]['type']=='box':
-                        self.client_box.upload(self.cv_location + local_entry['fullpath'])
+                        self.client_box.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
                     if local_entry.primary[0]['type']=='gdr':
                         self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
 
@@ -362,7 +362,8 @@ class cloudview:
             child = boxdotnet.XMLNode()
             child.elementName = 'view'
             child['ts']='0'
-            child['cur_id']='0'
+            child['cur_id']='1'
+            #id 0 is reserved for metadata.xml
             try:
                 list = getattr(self.metadata, 'view')
             except AttributeError:

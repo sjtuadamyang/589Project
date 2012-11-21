@@ -3,7 +3,7 @@ import boxdotnet
 
 client = boxdotnet.BoxDotNet()
 
-file_id = client.upload('test.txt')
+file_id = client.upload('test.txt', '1')
 
 client.replace(file_id, 'test.txt')
 
