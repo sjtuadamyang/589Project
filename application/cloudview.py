@@ -115,6 +115,10 @@ class cloudview:
         try:
             f = open('./metadata.xml', 'rb')
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
+            try:
+                getattr(self.metadata.view[0], 'file')
+            except AttributeError:
+                setattr(self.metadata.view[0], 'file', [])
             self.local_file = self.__get_filelist(self.metadata)
             for file in self.local_file:
                 print os.path.dirname(file['fullpath'])
@@ -175,7 +179,7 @@ class cloudview:
                 continue
         
         if i<len(self.local_file):
-            for index in range(i, len(self.local_file)-1):
+            for index in range(i, len(self.local_file)):
                 local_entry = self.local_file[index]
                 if l_ts<s_ts:
                     #delete all remain files
@@ -184,12 +188,16 @@ class cloudview:
                 else:
                     #upload all remain files
                     if local_entry.primary[0]['type']=='box':
-                        self.client_box.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
+                        file_id = self.client_box.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
+                        local_entry.primary[0]['file_id'] = file_id
                     if local_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
+                        file_id, download_url = self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
+                        local_entry.primary[0]['file_id'] = file_id
+                        local_entry.primary[0]['download_url'] = download_url
+
 
         if j<len(self.server_file):
-            for index in range(j, len(self.server_file)-1):
+            for index in range(j, len(self.server_file)):
                 server_entry = self.server_file[index]
                 if l_ts<s_ts:
                     #download all remaining files
@@ -248,6 +256,7 @@ class cloudview:
         for file in self.metadata.view[0].file:
             if file['fullpath'] == self.cv_current_dir + file['title']:
                 list += file['title']+' '
+
         #print "curFolderNode name is"+str(self.curFolderNode.name)
         list += self.curFolderNode.get_child()
         print list
@@ -363,6 +372,7 @@ class cloudview:
             child.elementName = 'view'
             child['ts']='0'
             child['cur_id']='1'
+            setattr(child, 'file', [])
             #id 0 is reserved for metadata.xml
             try:
                 list = getattr(self.metadata, 'view')
@@ -374,8 +384,6 @@ class cloudview:
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
-            os.system('touch .av')
-            self.add('.av', 'box')
 
         self.initialized = True
 

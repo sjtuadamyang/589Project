@@ -1,14 +1,4 @@
 <?xml version="1.0" ?>
 <metadata>
-    <view cur_id="3" ts="1353350139">
-        <file fullpath="/.av" id="0" title=".av" ts="1353350131">
-            <primary download_url="" file_id="" type="box"/>
-        </file>
-        <file fullpath="/bb/.av" id="1" title=".av" ts="1353350134">
-            <primary download_url="" file_id="" type="box"/>
-        </file>
-        <file fullpath="/bb/cc/.av" id="2" title=".av" ts="1353350139">
-            <primary download_url="" file_id="" type="box"/>
-        </file>
-    </view>
+    <view cur_id="1" ts="0"/>
 </metadata>

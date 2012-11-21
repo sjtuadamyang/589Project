@@ -266,6 +266,7 @@ class BoxDotNet(object):
         # construct POST data
         boundary = mimetools.choose_boundary()
         body = ""
+        print path
         title = 'id_'+id + os.path.basename(path)
 
         # filename
@@ -393,6 +394,7 @@ class BoxDotNet(object):
 
     def setmetadata(self, meta_path):
         if self.metadata_id == None:
-            metadata_id = self.upload(self.meta_path, '0')
-        self.replace(self.metadata_id, meta_path)  
+            metadata_id = self.upload(meta_path, '0')
+        else:
+            self.replace(self.metadata_id, meta_path)  
         
