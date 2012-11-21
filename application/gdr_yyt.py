@@ -106,6 +106,9 @@ class GOOGLE_VIEW:
         return None
 
     def setmetadata(self, path):
+        if self.metadata_id == '':
+            self.upload(path)
+            return
         self.replace(self.metadata_id, path)
 
     def upload(self, path):
