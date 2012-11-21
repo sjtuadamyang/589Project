@@ -216,12 +216,12 @@ class cloudview:
         if l_ts<s_ts:
             self.metadata = self.ser_metadata
             #write down to metadata.txt
-            f = open('metadata.txt', 'wb')
+            f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
         if l_ts>s_ts:
             #write down to metadata.txt
-            f = open('metadata.txt', 'wb')
+            f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
             #upload self.metalist to all servers
@@ -234,7 +234,7 @@ class cloudview:
             try:
                 getattr(metadata.view[0], 'file')
             except AttributeError:
-                return []
+                setattr(metadata.view[0], 'file', [])
             return metadata.view[0].file
         return []
 
