@@ -220,6 +220,10 @@ class cloudview:
             f.write(self.metadata.convertXML())
             f.close()
         if l_ts>s_ts:
+            #write down to metadata.txt
+            f = open('metadata.txt', 'wb')
+            f.write(self.metadata.convertXML())
+            f.close()
             #upload self.metalist to all servers
             self.client_gdr.setmetadata('metadata.xml')
             self.client_box.setmetadata('metadata.xml')
@@ -389,12 +393,7 @@ class cloudview:
         self.initialized = True
 
     def featureTest(self):
-        """metaNode_1 = self.client_box.getmetadata()    
-        self.client_gd.upload('metadata.xml', 'metadata.xml')
-        metaNode_2 = self.client_gd.retrieve_metadata()    
-        if not metaNode_2 == None:
-            print 'gdr metadata'
-            print metaNode_2.convertXML()"""
+        pass
 
 def main():
     print 'app starts'
