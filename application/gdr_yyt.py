@@ -30,6 +30,7 @@ class GOOGLE_VIEW:
     CLIENT_ID = '1021813612028.apps.googleusercontent.com'
     Drive_Service = False
     metadata_id = ''
+    metadata_url = ''
     credentials = None
     def __init__(self):
        if glob.glob('GOOGLE_CREDENTIAL'):
@@ -82,7 +83,7 @@ class GOOGLE_VIEW:
         result = []
         page_token = None
         if not self.metadata_id == '':
-            return (self.download(tmp['downloadUrl'], 'metadata.xml'))
+            return (self.download(self.metadata_url, 'metadata.xml'))
         while True:
             try:
                 param = {}
@@ -101,6 +102,7 @@ class GOOGLE_VIEW:
             #print tmp['title']
             if tmp['title'] == 'metadata.xml':
                 self.metadata_id = tmp['id']
+                self.metadata_url = tmp['downloadUrl']
                 return (self.download(tmp['downloadUrl'], 'metadata.xml'))
                 break
         return None
