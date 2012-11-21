@@ -123,7 +123,7 @@ class GOOGLE_VIEW:
         }
 
         file = self.Drive_Service.files().insert(body=body, media_body=media_body).execute()
-        return file
+        return file['id'], file['downloadUrl']
 
     def delete(self, file_id):
         if  not self.Drive_Service: 

@@ -266,7 +266,6 @@ class BoxDotNet(object):
         # construct POST data
         boundary = mimetools.choose_boundary()
         body = ""
-        print path
         title = 'id_'+id + os.path.basename(path)
 
         # filename

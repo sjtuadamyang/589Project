@@ -137,6 +137,7 @@ class cloudview:
         i = 0
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
+        print l_ts, s_ts
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
@@ -218,7 +219,7 @@ class cloudview:
             f = open('metadata.txt', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
-        else:
+        if l_ts>s_ts:
             #upload self.metalist to all servers
             self.client_gdr.setmetadata('metadata.xml')
             self.client_box.setmetadata('metadata.xml')
@@ -315,7 +316,8 @@ class cloudview:
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
         self.cd(dirname)
         print self.cv_location+'.av'
-        self.add(self.cv_location+'/.av', 'box')
+        os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
+        self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
         self.cd('../')
 
     def delete(self, filename):
@@ -384,7 +386,6 @@ class cloudview:
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
-
         self.initialized = True
 
     def featureTest(self):
@@ -399,6 +400,7 @@ def main():
     print 'app starts'
     cv = cloudview() 
     cv.init()
+    cv.sync()
     cv.run()
     cv.write_meta()
 
