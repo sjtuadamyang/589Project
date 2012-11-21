@@ -1,4 +1,8 @@
 <?xml version="1.0" ?>
 <metadata>
-    <view cur_id="1" ts="0"/>
+    <view cur_id="2" ts="1353542112">
+        <file fullpath="/test.txt" id="1" title="test.txt" ts="1353542112">
+            <primary download_url="" file_id="0BzE6ei5-v4A9MzkzWk1VNzVVMkk" type="gdr"/>
+        </file>
+    </view>
 </metadata>

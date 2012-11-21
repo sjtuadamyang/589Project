@@ -126,6 +126,8 @@ class cloudview:
             print "local view is at stamp: " + str(self.metadata.view[0]['ts'])
         except IOError:
             print 'no file named metadata.xml'
+        except Exception:
+            print 'metadata.xml is garbage'
         self.cv_location = os.path.dirname(os.path.realpath(__file__))
         self.cv_current_dir = '/'
 
@@ -190,11 +192,12 @@ class cloudview:
                     #upload all remain files
                     if local_entry.primary[0]['type']=='box':
                         file_id = self.client_box.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
-                        local_entry.primary[0]['file_id'] = file_id
+                        local_entry.primary[0]['file_id'] = str(file_id)
                     if local_entry.primary[0]['type']=='gdr':
                         file_id, download_url = self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
-                        local_entry.primary[0]['file_id'] = file_id
-                        local_entry.primary[0]['download_url'] = download_url
+                        local_entry.primary[0]['file_id'] = str(file_id)
+                        print download_url
+                        #local_entry.primary[0]['download_url'] = download_url
 
 
         if j<len(self.server_file):
@@ -386,7 +389,9 @@ class cloudview:
                 setattr(self.metadata, 'view', [])
             list = getattr(self.metadata, 'view')
             list.append(child)
+            self.local_file = self.__get_filelist(self.metadata)
             #write the metadata to './metadata.xml'
+            #it seems we do not need to write at this time
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
