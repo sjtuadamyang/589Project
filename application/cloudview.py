@@ -206,15 +206,15 @@ class cloudview:
                 if l_ts<s_ts:
                     #download all remaining files
                     if server_entry.primary[0]['type']=='box':
-                        self.client_box.download(server_entry['file_id'], cv_location+server_entry['fullpath'])
-                    if local_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.download(server_entry['download_url'], cv_location+server_entry['fullpath'])
+                        self.client_box.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
+                    if server_entry.primary[0]['type']=='gdr':
+                        self.client_gdr.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
                 else:
                     #delete all remaining files
                     if server_entry.primary[0]['type']=='box':
-                        self.client_box.delete(server_entry['file_id'])
-                    if local_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.delete(server_entry['file_id'])
+                        self.client_box.delete(server_entry.primary[0]['file_id'])
+                    if server_entry.primary[0]['type']=='gdr':
+                        self.client_gdr.delete(server_entry.primary[0]['file_id'])
         #sync metalist
         if l_ts<s_ts:
             self.metadata = self.ser_metadata
