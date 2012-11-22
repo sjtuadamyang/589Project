@@ -1,0 +1,6 @@
+mkdir abc
+cd abc
+add ~/test.txt gdr
+delete test.txt
+sync
+exit
