@@ -16,4 +16,4 @@ for i in onlyfiles:
         if os.path.isfile(realpath):
             os.remove(realpath)
         else:
-            os.rmtree(realpath)
+            rmtree(realpath)
