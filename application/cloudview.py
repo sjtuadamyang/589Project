@@ -82,10 +82,12 @@ class cloudview:
     folderRoot = folderNode('/')
     curFolderNode = folderRoot
 
-    def run(self, testcase=None):
+    def run(self, testcase):
+      f =open(testcase[0], 'r+')
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
-        command0 = raw_input(tmp_string)
+        #command0 = raw_input(tmp_string)
+        command0 = f.readline() 
         command = command0.split()
         if command[0] == 'sync':
             self.sync()
@@ -135,12 +137,12 @@ class cloudview:
     def sync(self):
         s_ts = self.__retrieve_ser_metadata()
         self.server_file = self.__get_filelist(self.ser_metadata) 
-        print len(self.local_file)
-        print len(self.server_file)
+        #print len(self.local_file)
+        #print len(self.server_file)
         i = 0
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
-        print l_ts, s_ts
+        #print l_ts, s_ts
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
@@ -197,7 +199,7 @@ class cloudview:
                     if local_entry.primary[0]['type']=='gdr':
                         file_id, download_url = self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
                         local_entry.primary[0]['file_id'] = str(file_id)
-                        print download_url
+                        #print download_url
                         #local_entry.primary[0]['download_url'] = download_url
 
 
@@ -279,7 +281,7 @@ class cloudview:
         command = 'cp '+filename+' '+fspath
         if not os.path.isfile(os.path.expanduser(filename)):
             raise Exception(CVError, "file not exist")
-        print command
+        #print command
         os.system(command)
         try:
             getattr(self.metadata.view[0], 'file')
@@ -289,7 +291,7 @@ class cloudview:
             if file['fullpath'] == self.cv_current_dir+title:
                 file['ts']=str(int(time.time()))
                 self.metadata.view[0]['ts']=file['ts']
-                print self.metadata.convertXML()
+                #print self.metadata.convertXML()
                 return
         #add file information to metalist
         file = boxdotnet.XMLNode() 
@@ -309,7 +311,7 @@ class cloudview:
         self.metadata.view[0]['cur_id']=str(int(self.metadata.view[0]['cur_id'])+1)
         self.metadata.view[0]['ts']=file['ts']
         self.metadata.view[0].file.append(file)
-        print self.metadata.convertXML()
+        #print self.metadata.convertXML()
 
     def mkdir(self, dirname):
         fspath = self.cv_location+self.cv_current_dir+dirname
@@ -323,7 +325,7 @@ class cloudview:
         os.system(command)
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
         self.cd(dirname)
-        print self.cv_location+'.av'
+        #print self.cv_location+'.av'
         os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
         self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
         self.cd('../')
@@ -344,7 +346,7 @@ class cloudview:
                 #delete
                 self.metadata.view[0].file.remove(file)
         self.metadata.view[0]['ts']=str(int(time.time()))
-        print self.metadata.convertXML()
+        #print self.metadata.convertXML()
 
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
@@ -403,11 +405,10 @@ class cloudview:
 
 def main(argv):
     print 'app starts'
-    print argv[0]
     cv = cloudview() 
     cv.init()
     cv.sync()
-    cv.run()
+    cv.run(argv)
     cv.write_meta()
 
 if __name__ == "__main__":

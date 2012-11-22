@@ -233,14 +233,14 @@ class BoxDotNet(object):
                 if method == "delete_":
                     arg["action"] = "delete"
                 postData = _self.__url_encode_params(params=arg)
-                print "--url---------------------------------------------"
-                print url
-                print "--postData----------------------------------------"
-                print postData
+                #print "--url---------------------------------------------"
+                #print url
+                #print "--postData----------------------------------------"
+                #print postData
                 f = urllib.urlopen(url + postData)
                 data = f.read()
-                print "--response----------------------------------------"
-                print data
+                #print "--response----------------------------------------"
+                #print data
                 f.close()
 
                 xml = XMLNode.parseXML(data, True)
@@ -294,7 +294,7 @@ class BoxDotNet(object):
         response = urllib2.urlopen(request)
         rspXML = response.read()
 
-        print rspXML
+        #print rspXML
         rspNode = XMLNode()
         rspNode = XMLNode.parseXML(rspXML)
         return int(rspNode.files[0].file[0]['id'])
@@ -337,7 +337,7 @@ class BoxDotNet(object):
         response = urllib2.urlopen(request)
         rspXML = response.read()
 
-        print rspXML
+        #print rspXML
         return XMLNode.parseXML(rspXML)
 
     def delete(self, file_id):
@@ -353,7 +353,7 @@ class BoxDotNet(object):
         request = urllib2.Request(url) 
         response = urllib2.urlopen(request)
         rspXML = response.read()
-        print rspXML
+        #print rspXML
         return XMLNode.parseXML(rspXML)
 
     def download(self, file_id, path):
