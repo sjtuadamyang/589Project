@@ -70,6 +70,10 @@ class GOOGLE_VIEW:
                 self.metadata = XMLNode.parseXML(content, True)
                 return self.metadata
                 
+            #test existence of the dir, if not, create one
+            dir = os.path.dirname(path)
+            if not os.path.exists(dir):
+                os.makedirs(dir)
             f = open(path, 'w+')
             f.write(content)
             f.close()

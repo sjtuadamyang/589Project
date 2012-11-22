@@ -367,6 +367,9 @@ class BoxDotNet(object):
         if path == None:
             return rsp
         else:
+            dir = os.path.dirname(path)
+            if not os.path.exists(dir):
+                os.makedirs(dir)
             f = open(path, 'wb')
             f.write(rsp)
             f.close()
