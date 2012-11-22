@@ -88,11 +88,16 @@ class cloudview:
 
 
     def run(self, testcase):
-      f =open(testcase[0], 'r+')
+      f = None
+      if testcase:
+        print testcase
+        f =open(testcase[0], 'r+')
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
-        #command0 = raw_input(tmp_string)
-        command0 = f.readline() 
+        if not testcase:
+            command0 = raw_input(tmp_string)
+        else:
+            command0 = f.readline() 
         print 'Current Command: '+command0
         command = command0.split()
         try:
@@ -354,8 +359,8 @@ class cloudview:
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
         self.cd(dirname)
         #print self.cv_location+'.av'
-        os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
-        self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
+        #os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
+        #self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
         self.cd('../')
 
     def delete(self, filename):
