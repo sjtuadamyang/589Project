@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+from shutil import rmtree
 from os import listdir
 from os.path import isfile, join
 
@@ -15,4 +16,4 @@ for i in onlyfiles:
         if os.path.isfile(realpath):
             os.remove(realpath)
         else:
-            os.removedirs(realpath)
+            os.rmtree(realpath)
