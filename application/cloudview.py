@@ -62,12 +62,12 @@ class folderNode:
             try:
                 getattr(self, 'parent')
             except AttributeError:
-                raise Exception(CVError, "no parent for current dir")
+                raise CVError("no parent for current dir")
             return self.parent
         for item in self.childNodes:
             if item.name == dir:
                 return item
-        raise Exception(CVError, "no dir found")
+        raise CVError("no dir found")
 
 class cloudview:
     client_box = boxdotnet.BoxDotNet()
@@ -82,35 +82,47 @@ class cloudview:
     folderRoot = folderNode('/')
     curFolderNode = folderRoot
 
-    def run(self, testcase=None):
+    def run(self):
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
         command0 = raw_input(tmp_string)
         command = command0.split()
-        if command[0] == 'sync':
-            self.sync()
-            continue
-        if command[0] == 'ls':
-            self.ls()
-            continue
-        if command[0] == 'add':
-            self.add(command[1], command[2])
-            continue
-        if command[0] == 'delete':
-            self.delete(command[1])
-            continue
-        if command[0] ==  'mkdir':
-            self.mkdir(command[1])
-            continue
-        if command[0] == 'cd':
-            self.cd(command[1])
-            continue
-        if command[0] == 'exit':
-            print 'Existing CloudView'
-            return
+        try:
+            if command[0] == 'sync':
+                self.sync()
+                continue
+            if command[0] == 'ls':
+                self.ls()
+                continue
+            if command[0] == 'add':
+                if len(command) < 3:
+                    raise CVError("add <file path> <primary type>")
+                    continue
+                self.add(command[1], command[2])
+                continue
+            if command[0] == 'delete':
+                self.delete(command[1])
+                continue
+            if command[0] ==  'mkdir':
+                self.mkdir(command[1])
+                continue
+            if command[0] == 'cd':
+                self.cd(command[1])
+                continue
+            if command[0] == 'exit':
+                print 'Existing CloudView'
+                return
+        except CVError as e:
+            print str(e)
+            rinput = None
+            while (not rinput == 'Y') and (not rinput == 'N'):
+                print "still continue test?Y:N"
+                rinput = raw_input() 
+            if rinput == 'Y':
+                continue
+            else:
+                pass
         os.system(command0)
-        #print 'Command Not Exists'
-        #print 'Commands:\nsync:\t\t\tsyncnize between server and local\nls:\t\t\tlist all the files\nadd filename drive:\tadd new file to the current directory\ndelete filename:\tdelete file under current directory\nmkdir dir:\t\tmake new directory under current directory\ncd dir:\t\t\tgoto certain directory\nexit:\t\t\texit CloudView'
 
     def __init__(self):
         try:
@@ -171,7 +183,7 @@ class cloudview:
                         self.client_gdr.delete(server_entry.primary['file_id'])
                 else:
                     #not possible, we need to raise an exception
-                    raise Exception(CVError, "l_ts < s_ts happended, something wrong with our logic")
+                    raise CVError("l_ts < s_ts happended, something wrong with our logic")
                 j=j+1
                 continue
             if local_entry['id'] < server_entry['id']:
@@ -261,7 +273,7 @@ class cloudview:
         #self.folderRoot.print_tree()
         list = '' 
         if not self.initialized:
-            raise Exception(CVError, "application not initialized")
+            raise CVError("application not initialized")
         for file in self.metadata.view[0].file:
             if file['fullpath'] == self.cv_current_dir + file['title']:
                 list += file['title']+' '
@@ -278,7 +290,7 @@ class cloudview:
         fspath = self.cv_location+self.cv_current_dir +title
         command = 'cp '+filename+' '+fspath
         if not os.path.isfile(os.path.expanduser(filename)):
-            raise Exception(CVError, "file not exist")
+            raise CVError("file not exist")
         print command
         os.system(command)
         try:
@@ -315,10 +327,10 @@ class cloudview:
         fspath = self.cv_location+self.cv_current_dir+dirname
         title = os.path.basename(dirname)
         if os.path.exists(fspath):
-            raise Exception(CVError, "path already exist")
+            raise CVError("path already exist")
         
         if not title==dirname:
-            raise Exception(CVError, "filename can not be a path name")
+            raise CVError("filename can not be a path name")
         command = 'mkdir '+fspath
         os.system(command)
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
@@ -332,7 +344,7 @@ class cloudview:
         """not implemented yet"""
         title = os.path.basename(filename)
         if not title==filename:
-            raise Exception(CVError, "filename can not be a path name")
+            raise CVError("filename can not be a path name")
         #transfer filename into absolute address
         title = self.cv_location+self.cv_current_dir+title
         command = 'rm '+title
@@ -348,7 +360,7 @@ class cloudview:
 
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
-            raise Exception(CVError, "dir not exist")
+            raise CVError("dir not exist")
         self.cv_current_dir = self.cv_current_dir + dir + '/'
         self.curFolderNode = self.curFolderNode.cd_to_path(dir)
         self.cv_current_dir = '/'+os.path.relpath(os.path.abspath(self.cv_location+self.cv_current_dir), self.cv_location)+'/'
@@ -358,7 +370,7 @@ class cloudview:
     def write_meta(self):
         f = open('metadata.xml', 'wb')
         if not f:
-            raise Exception(CVError, "metadata.xml not exist")
+            raise CVError("metadata.xml not exist")
         f.write(self.metadata.convertXML())
         f.close
 
@@ -403,7 +415,6 @@ class cloudview:
 
 def main(argv):
     print 'app starts'
-    print argv[0]
     cv = cloudview() 
     cv.init()
     cv.sync()
