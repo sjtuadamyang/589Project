@@ -375,12 +375,7 @@ class cloudview:
                 self.metadata.view[0].file.remove(file)
         self.metadata.view[0]['ts']=str(int(time.time()))
         #print self.metadata.convertXML()
-
-    def delete_all(self):
-      self.init()
-      self.metadata.view[0]['ts']=str(int(time.time()))
-      self.sync()
-
+        
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
             raise CVError("dir not exist")
