@@ -57,11 +57,6 @@ class folderNode:
             index += 1
         #print "test: after adding node we curNode is "+curNode.name
 
-    def delete_all(self):
-      self.init()
-      self.metadata.view[0]['ts']=str(int(time.time()))
-      self.sync()
-
     def cd_to_path(self, dir):
         if dir == '..' or dir == '../':
             try:
@@ -112,6 +107,7 @@ class cloudview:
                 continue
             if command[0]== 'deleteall':
                 self.delete_all()
+                continue
             if command[0] ==  'mkdir':
                 self.mkdir(command[1])
                 continue
@@ -130,7 +126,8 @@ class cloudview:
             if rinput == 'Y':
                 continue
             else:
-                pass
+                print "Not continuing, existing CloudView"
+                return
         os.system(command0)
 
     def __init__(self):
@@ -372,6 +369,11 @@ class cloudview:
                 self.metadata.view[0].file.remove(file)
         self.metadata.view[0]['ts']=str(int(time.time()))
         #print self.metadata.convertXML()
+
+    def delete_all(self):
+      self.init()
+      self.metadata.view[0]['ts']=str(int(time.time()))
+      self.sync()
 
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
