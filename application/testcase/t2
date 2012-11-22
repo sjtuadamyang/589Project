@@ -1,13 +1,5 @@
-mkdir abc
 add ~/test.txt box
-cd abc
 add ~/test.txt gdr
-mkdir cc
-mkdir bb
-mkdir gg
-cd gg
-add ~/test.txt box
-cd ../
-add ~/test2.txt gdr
-cd ../
-add ~/test2.txt box
+sync
+exit
+
