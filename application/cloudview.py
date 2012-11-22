@@ -205,6 +205,8 @@ class cloudview:
                     os.system('rm '+fullpath)
                 else:
                     #upload all remain files
+                    if local_entry['title'] == '.av':
+                        continue
                     if local_entry.primary[0]['type']=='box':
                         file_id = self.client_box.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
                         local_entry.primary[0]['file_id'] = str(file_id)
@@ -220,6 +222,8 @@ class cloudview:
                 server_entry = self.server_file[index]
                 if l_ts<s_ts:
                     #download all remaining files
+                    if server_entry['title'] == '.av':
+                        continue
                     if server_entry.primary[0]['type']=='box':
                         self.client_box.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
                     if server_entry.primary[0]['type']=='gdr':
