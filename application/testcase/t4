@@ -1,0 +1,21 @@
+mkdir a
+cd a
+mkdir b
+add ~/test.txt box
+cd ../
+add ~/test.txt box
+cd a
+cd b
+add ~/test.txt box
+mkdir c
+cd c
+add ~/test.txt box
+mkdir d
+cd d
+add ~/test.txt box
+cd ../
+cd ../
+cd ../
+cd ../
+sync
+exit

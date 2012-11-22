@@ -134,6 +134,28 @@ class GOOGLE_VIEW:
             raise NeedLoginException(None)
         self.Drive_Service.files().delete(fileId=file_id).execute() 
 
+    def deleteall(self):
+        if  not self.Drive_Service: 
+            raise NeedLoginException(None)
+        result = []
+        page_token = None
+        while True:
+            try:
+                param = {}
+                if page_token:
+                    param['pageToken'] = page_token
+                files = self.Drive_Service.files().list(**param).execute()
+                result.extend(files['items'])
+                page_token = files.get('nextPageToken')
+                if not page_token:
+                    break
+            except errors.HttpError, error:
+                print 'An error occurred: %s' % error
+                break
+        #print 'titles in google drive'
+        for tmp in result:
+            self.delete(tmp['id'])
+
     def replace(self, file_id, path):
         try:
             file=self.Drive_Service.files().get(fileId=file_id).execute()

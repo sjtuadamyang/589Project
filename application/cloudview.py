@@ -57,11 +57,6 @@ class folderNode:
             index += 1
         #print "test: after adding node we curNode is "+curNode.name
 
-    def delete_all(self):
-      self.init()
-      self.metadata.view[0]['ts']=str(int(time.time()))
-      self.sync()
-
     def cd_to_path(self, dir):
         if dir == '..' or dir == '../':
             try:
@@ -87,12 +82,18 @@ class cloudview:
     folderRoot = folderNode('/')
     curFolderNode = folderRoot
 
+    def delete_all(self):
+      self.client_gdr.deleteall()
+      self.client_box.deleteall()
+
+
     def run(self, testcase):
       f =open(testcase[0], 'r+')
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
         #command0 = raw_input(tmp_string)
         command0 = f.readline() 
+        print 'Current Command: '+command0
         command = command0.split()
         try:
             if command[0] == 'sync':
@@ -112,6 +113,7 @@ class cloudview:
                 continue
             if command[0]== 'deleteall':
                 self.delete_all()
+                continue
             if command[0] ==  'mkdir':
                 self.mkdir(command[1])
                 continue
@@ -232,9 +234,9 @@ class cloudview:
                     if server_entry['title'] == '.av':
                         continue
                     if server_entry.primary[0]['type']=='box':
-                        self.client_box.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
+                        self.client_box.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])
                     if server_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
+                        self.client_gdr.download(server_entry.primary[0]['download_url'], self.cv_location+server_entry['fullpath'])
                 else:
                     #delete all remaining files
                     if server_entry.primary[0]['type']=='box':
