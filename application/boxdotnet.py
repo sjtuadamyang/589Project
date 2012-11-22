@@ -396,4 +396,14 @@ class BoxDotNet(object):
             metadata_id = self.upload(meta_path, '0')
         else:
             self.replace(self.metadata_id, meta_path)  
+    
+    def deleteall(self):
+        list_tree = self.__listfile()
+        file_list = []
+        try:
+            file_list = list_tree.tree[0].folder[0].files[0].file
+        except AttributeError:
+            pass
+        for f in file_list:
+            self.delete(f["id"])     
         
