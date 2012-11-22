@@ -1,0 +1,5 @@
+add ~/test.txt box
+add ~/test.txt gdr
+sync
+exit
+

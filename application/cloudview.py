@@ -305,6 +305,8 @@ class cloudview:
             setattr(self.metadata.view[0], 'file', [])
         for file in self.metadata.view[0].file:
             if file['fullpath'] == self.cv_current_dir+title:
+                if file.primary[0]['type']!=primary:
+                    raise CVError("File already exist on another cloud")
                 file['ts']=str(int(time.time()))
                 self.metadata.view[0]['ts']=file['ts']
                 #print self.metadata.convertXML()
