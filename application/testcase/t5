@@ -1,0 +1,21 @@
+mkdir a
+cd a
+mkdir b
+add ~/test.txt gdr 
+cd ../
+add ~/test.txt gdr
+cd a
+cd b
+add ~/test.txt gdr
+mkdir c
+cd c
+add ~/test.txt gdr
+mkdir d
+cd d
+add ~/test.txt gdr
+cd ../
+cd ../
+cd ../
+cd ../
+sync
+exit

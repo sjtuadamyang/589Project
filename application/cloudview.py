@@ -354,8 +354,8 @@ class cloudview:
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
         self.cd(dirname)
         #print self.cv_location+'.av'
-        os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
-        self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
+        #os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
+        #self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
         self.cd('../')
 
     def delete(self, filename):

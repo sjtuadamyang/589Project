@@ -4,6 +4,8 @@ from shutil import rmtree
 from os import listdir
 from os.path import isfile, join
 
+os.system('./cloudview.py testcase/clean')
+
 filekept = ['GOOGLE_CREDENTIAL', 'Token', 'boxdotnet.py', 'boxdotnet.pyc', \
 'clean.py', 'client_box_test.py', 'cloudview.py', 'gdr_yyt.py', 'gdr_yyt.pyc', \
 'testcase', '.gitignore'] 
@@ -17,3 +19,5 @@ for i in onlyfiles:
             os.remove(realpath)
         else:
             rmtree(realpath)
+
+
