@@ -1,4 +1,4 @@
 GOOGLE_CREDENTIAL
-Token
+./Token
 *.pyc
 metadata.xml
