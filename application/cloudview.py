@@ -88,11 +88,16 @@ class cloudview:
 
 
     def run(self, testcase):
-      f =open(testcase[0], 'r+')
+      f = None
+      if testcase:
+        print testcase
+        f =open(testcase[0], 'r+')
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
-        #command0 = raw_input(tmp_string)
-        command0 = f.readline() 
+        if not testcase:
+            command0 = raw_input(tmp_string)
+        else:
+            command0 = f.readline() 
         print 'Current Command: '+command0
         command = command0.split()
         try:
