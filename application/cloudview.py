@@ -57,6 +57,11 @@ class folderNode:
             index += 1
         #print "test: after adding node we curNode is "+curNode.name
 
+    def delete_all(self):
+      self.init()
+      self.metadata.view[0]['ts']=str(int(time.time()))
+      self.sync()
+
     def cd_to_path(self, dir):
         if dir == '..' or dir == '../':
             try:
@@ -105,6 +110,8 @@ class cloudview:
             if command[0] == 'delete':
                 self.delete(command[1])
                 continue
+            if command[0]== 'deleteall':
+                self.delete_all()
             if command[0] ==  'mkdir':
                 self.mkdir(command[1])
                 continue
