@@ -5,6 +5,7 @@ import time
 import gdr_yyt
 import os.path
 import os
+import sys
 
 class CVError(Exception):
     def __init__(self, value):
@@ -81,7 +82,7 @@ class cloudview:
     folderRoot = folderNode('/')
     curFolderNode = folderRoot
 
-    def run(self):
+    def run(self, testcase=None):
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
         command0 = raw_input(tmp_string)
@@ -400,8 +401,9 @@ class cloudview:
     def featureTest(self):
         pass
 
-def main():
+def main(argv):
     print 'app starts'
+    print argv[0]
     cv = cloudview() 
     cv.init()
     cv.sync()
@@ -409,4 +411,4 @@ def main():
     cv.write_meta()
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
