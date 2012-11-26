@@ -177,15 +177,16 @@ class cloudview:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
                     if local_entry.primary[0]['type']=='box':
-                        self.client_box.replace(local_entry.primary['file_id'], cv_location+local_entry['fullpath'])
+                        self.client_box.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
                     if local_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.replace(local_entry.primary['file_id'], cv_location+local_entry['fullpath'])
+                        self.client_gdr.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
                 if int(local_entry['ts'])<int(server_entry['ts']):
-                    #download from server
+                    #download from server and add path to current path tree
+                    self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
                     if local_entry.primary[0]['type']=='box':
-                        self.client_box.download(server_entry.primary['file_id'], cv_location+server_entry['fullpath'])
+                        self.client_box.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
                     if local_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.download(server_entry.primary['download_url'], cv_location+server_entry['fullpath'])
+                        self.client_gdr.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
                     
                 i=i+1
                 j=j+1
@@ -195,9 +196,9 @@ class cloudview:
                 if l_ts>s_ts:
                     #delete server files
                     if server_entry.primary[0]['type']=='box':
-                        self.client_box.delete(server_entry.primary['file_id'])
+                        self.client_box.delete(server_entry.primary[0]['file_id'])
                     if server_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.delete(server_entry.primary['file_id'])
+                        self.client_gdr.delete(server_entry.primary[0]['file_id'])
                 else:
                     #not possible, we need to raise an exception
                     raise CVError("l_ts < s_ts happended, something wrong with our logic")
@@ -236,7 +237,8 @@ class cloudview:
             for index in range(j, len(self.server_file)):
                 server_entry = self.server_file[index]
                 if l_ts<s_ts:
-                    #download all remaining files
+                    #download all remaining files and update folder tree
+                    self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
                     if server_entry['title'] == '.av':
                         continue
                     if server_entry.primary[0]['type']=='box':
@@ -252,12 +254,12 @@ class cloudview:
         #sync metalist
         if l_ts<s_ts:
             self.metadata = self.ser_metadata
-            #write down to metadata.txt
+            #write down to metadata.xml
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
         if l_ts>s_ts:
-            #write down to metadata.txt
+            #write down to metadata.xml
             f = open('metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
@@ -384,8 +386,8 @@ class cloudview:
     def cd(self, dir):
         if not os.path.isdir(self.cv_location+self.cv_current_dir+dir):
             raise CVError("dir not exist")
-        self.cv_current_dir = self.cv_current_dir + dir + '/'
         self.curFolderNode = self.curFolderNode.cd_to_path(dir)
+        self.cv_current_dir = self.cv_current_dir + dir + '/'
         self.cv_current_dir = '/'+os.path.relpath(os.path.abspath(self.cv_location+self.cv_current_dir), self.cv_location)+'/'
         if self.cv_current_dir == '/./':
             self.cv_current_dir='/'

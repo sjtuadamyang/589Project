@@ -13,7 +13,7 @@ onlyfiles = [f for f in listdir(os.path.dirname(os.path.realpath(__file__)))]
 
 for i in onlyfiles:
     if not i in filekept:
-        print i
+        print "deleting local file "+i
         realpath = os.path.realpath(i)
         if os.path.isfile(realpath):
             os.remove(realpath)
