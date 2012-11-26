@@ -12,6 +12,7 @@ from errno import *
 from stat import *
 import fcntl
 import logging
+import cloudview
 # pull in some spaghetti to make this stuff work without fuse-py being installed
 try:
     import _find_fuse_parts
@@ -255,7 +256,8 @@ class Xmp(Fuse):
 
 
 def main():
-
+    cv = cloudview.cloudview()
+    cv.init()
     usage = """
 Userspace nullfs-alike: mirror the filesystem tree from some point on.
 

@@ -210,12 +210,14 @@ class BoxDotNet(object):
 
             # open url
             url = "http://www.box.net/api/1.0/auth/%s" % ticket
-            webbrowser.open_new_tab(url)
-            raw_input()
+	    print url
+            #webbrowser.open_new_tab(url)
+            #raw_input()
 
             # get token
-            rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)
-            self.token = rsp.auth_token[0].elementText
+            #rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)
+            #self.token = rsp.auth_token[0].elementText
+	    self.token = raw_input()
             print "get token response: "
             print "token is "+str(self.token)
             # write token to file
