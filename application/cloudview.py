@@ -6,6 +6,7 @@ import gdr_yyt
 import os.path
 import os
 import sys
+import logging
 
 class CVError(Exception):
     def __init__(self, value):

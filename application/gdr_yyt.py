@@ -46,7 +46,7 @@ class GOOGLE_VIEW:
         flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
         print 'Go to the following link in your browser: '+ authorize_url
-        webbrowser.open_new_tab(authorize_url);
+        #webbrowser.open_new_tab(authorize_url);
         code = raw_input('Enter verification code: ').strip()
         self.credentials = flow.step2_exchange(code)
         # def store_credentials(credentials):
