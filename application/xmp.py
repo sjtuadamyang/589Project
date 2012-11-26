@@ -69,45 +69,58 @@ class Xmp(Fuse):
         return os.lstat("." + path)
 
     def readlink(self, path):
+        logging.debug('Readlinking')
         return os.readlink("." + path)
 
     def readdir(self, path, offset):
+        logging.debug('Readaddr')
         for e in os.listdir("." + path):
             yield fuse.Direntry(e)
 
     def unlink(self, path):
+        logging.debug('Unlink')
         os.unlink("." + path)
 
     def rmdir(self, path):
+        logging.debug('Rmdir')
         os.rmdir("." + path)
 
     def symlink(self, path, path1):
+        logging.debug('Syslink')
         os.symlink(path, "." + path1)
 
     def rename(self, path, path1):
+        logging.debug('Rename')
         os.rename("." + path, "." + path1)
 
     def link(self, path, path1):
+        logging.debug('Link')
         os.link("." + path, "." + path1)
 
     def chmod(self, path, mode):
+        logging.debug('Chmod')
         os.chmod("." + path, mode)
 
     def chown(self, path, user, group):
+        logging.debug('Chown')
         os.chown("." + path, user, group)
 
     def truncate(self, path, len):
+        logging.debug('Truncate')
         f = open("." + path, "a")
         f.truncate(len)
         f.close()
 
     def mknod(self, path, mode, dev):
+        logging.debug('Mknod')
         os.mknod("." + path, mode, dev)
 
     def mkdir(self, path, mode):
+        logging.debug('Mkdir')
         os.mkdir("." + path, mode)
 
     def utime(self, path, times):
+        logging.debug('Utime')
         os.utime("." + path, times)
 
 #    The following utimens method would do the same as the above utime method.
@@ -174,6 +187,7 @@ class Xmp(Fuse):
 
         def read(self, length, offset):
             self.file.seek(offset)
+            logging.debug('Reading File: %s',self.file.name)
             return self.file.read(length)
 
         def write(self, buf, offset):
@@ -186,10 +200,11 @@ class Xmp(Fuse):
             self.file.close()
 
         def _fflush(self):
-            if 'w' in self.file.mode or 'a' in self.file.mode:
+           if 'w' in self.file.mode or 'a' in self.file.mode:
                 self.file.flush()
 
         def fsync(self, isfsyncfile):
+            logging.debug('Fsyncing File: %s',self.file.name)
             self._fflush()
             if isfsyncfile and hasattr(os, 'fdatasync'):
                 os.fdatasync(self.fd)
@@ -197,6 +212,7 @@ class Xmp(Fuse):
                 os.fsync(self.fd)
 
         def flush(self):
+            logging.debug('Flushing File: %s',self.file.name)
             self._fflush()
             # cf. xmp_flush() in fusexmp_fh.c
             os.close(os.dup(self.fd))
