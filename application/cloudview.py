@@ -229,7 +229,7 @@ class cloudview:
                         file_id, download_url = self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
                         local_entry.primary[0]['file_id'] = str(file_id)
                         #print download_url
-                        #local_entry.primary[0]['download_url'] = download_url
+                        local_entry.primary[0]['download_url'] = download_url
 
 
         if j<len(self.server_file):
