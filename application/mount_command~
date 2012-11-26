@@ -1,0 +1,1 @@
+./xmp.py tmp/testfs/ -o root='/home/yyt/python/example/tmp/toor'

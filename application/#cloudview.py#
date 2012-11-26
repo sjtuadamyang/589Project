@@ -6,7 +6,6 @@ import gdr_yyt
 import os.path
 import os
 import sys
-import logging
 
 class CVError(Exception):
     def __init__(self, value):
@@ -193,7 +192,7 @@ class cloudview:
                 j=j+1
                 continue
             if local_entry['id'] > server_entry['id']:
-                """:)"""
+                """"""
                 if l_ts>s_ts:
                     #delete server files
                     if server_entry.primary[0]['type']=='box':
@@ -206,7 +205,7 @@ class cloudview:
                 j=j+1
                 continue
             if local_entry['id'] < server_entry['id']:
-                """:)"""
+                """"""
                 #delete local files
                 fullpath = self.cv_location + local_entry['fullpath']
                 os.system('rm '+fullpath)
@@ -303,7 +302,6 @@ class cloudview:
                 list += file['title']+' '
 
         #print "curFolderNode name is"+str(self.curFolderNode.name)
-       
         list += self.curFolderNode.get_child()
         print list
 
@@ -439,7 +437,7 @@ class cloudview:
 
     def featureTest(self):
         pass
-"""
+
 def main(argv):
     print 'app starts'
     cv = cloudview() 
@@ -450,4 +448,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-"""
