@@ -8,7 +8,7 @@ os.system('./cloudview.py testcase/clean')
 
 filekept = ['GOOGLE_CREDENTIAL', 'Token', 'boxdotnet.py', 'boxdotnet.pyc', \
 'clean.py', 'client_box_test.py', 'cloudview.py', 'gdr_yyt.py', 'gdr_yyt.pyc', \
-'testcase', '.gitignore'] 
+'testcase', '.gitignore', 'xmp.py', ''] 
 onlyfiles = [f for f in listdir(os.path.dirname(os.path.realpath(__file__)))]
 
 for i in onlyfiles:
