@@ -44,9 +44,10 @@ def flag2mode(flags):
 
 
 class Xmp(Fuse):
+    cv = cloudview.cloudview()
 
     def __init__(self, *args, **kw):
-
+        self.cv.init()
         Fuse.__init__(self, *args, **kw)
 
         # do stuff to set up your filesystem here, if you want
@@ -272,8 +273,7 @@ class Xmp(Fuse):
 
 
 def main():
-    cv = cloudview.cloudview()
-    cv.init()
+    #cv.init()
     usage = """
 Userspace nullfs-alike: mirror the filesystem tree from some point on.
 
