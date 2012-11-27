@@ -8,6 +8,7 @@
 #
 
 import os, sys
+import cloudview
 from errno import *
 from stat import *
 import fcntl
@@ -49,6 +50,7 @@ class Xmp(Fuse):
     def __init__(self, *args, **kw):
         self.cv.init()
         Fuse.__init__(self, *args, **kw)
+        #self.cloudview = cloudview.cloudview()
 
         # do stuff to set up your filesystem here, if you want
         #import thread
@@ -178,6 +180,7 @@ class Xmp(Fuse):
 
     def fsinit(self):
         os.chdir(self.root)
+        self.cv = cloudview.cloudview()
 
     class XmpFile(object):
 
