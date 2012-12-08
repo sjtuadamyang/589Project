@@ -533,8 +533,9 @@ class cloudview:
         file_idex = 0
         print 'length of client is '+str(len(self.client))
         for x in self.client:
-            print 'x in client x.authentication is '+str(x.authentication)
-            if not x.authentication:
+            print 'x in client x.authentication is '+str(x.authenticated)
+            if not x.authenticated:
+                print 'call authenticate with '+'.Token'+str(file_idex)
                 x.authenticate('.Token'+str(file_idex))
             file_idex = file_idex +1
             
@@ -546,7 +547,7 @@ class cloudview:
 def main(argv):
     print 'app starts'
     cv = cloudview() 
-    cv.init()
+    #cv.init()
     cv.sync()
     cv.run(argv)
     cv.write_meta()

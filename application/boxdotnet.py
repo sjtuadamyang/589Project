@@ -152,7 +152,7 @@ class BoxDotNet(object):
     type = 'box'
     END_POINT = 'http://www.box.net/api/1.0/rest?'
     API_KEY = '9cluykmx5i2filqz202p1t5frptgtjwn'
-    authenticated = True
+    authenticated = False
     metadata_id = None
     token = ''
 
