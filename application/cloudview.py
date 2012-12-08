@@ -158,9 +158,9 @@ class cloudview:
                 self.folderRoot.add_child_path(os.path.dirname(file['fullpath']+'/'))
             print "local view is at stamp: " + str(self.metadata.view[0]['ts'])
         except IOError:
-            print 'no file named metadata.xml'
+            print 'no file named .metadata.xml'
         except Exception:
-            print 'metadata.xml is garbage'
+            print '.metadata.xml is garbage'
         self.cv_location = os.path.dirname(os.path.realpath(__file__))
         self.cv_current_dir = '/'
 
