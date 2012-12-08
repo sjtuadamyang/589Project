@@ -173,7 +173,7 @@ class BoxDotNet(object):
         self.browser = browser
         self.__handlerCache={}
         try:
-            f = open('Token', 'rb')
+            f = open('.Token', 'rb')
             self.token = f.read()
             if self.token == '':
                 print 'we got nothing and we need to login'
@@ -210,16 +210,17 @@ class BoxDotNet(object):
 
             # open url
             url = "http://www.box.net/api/1.0/auth/%s" % ticket
-            webbrowser.open_new_tab(url)
-            raw_input()
+            #webbrowser.open_new_tab(url)
+            raw_input(url)
 
             # get token
             rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)
             self.token = rsp.auth_token[0].elementText
+            #self.token = raw_input()
             print "get token response: "
             print "token is "+str(self.token)
             # write token to file
-            f = open('Token', 'wb')
+            f = open('.Token', 'wb')
             f.write(self.token)
 
     def __getattr__(self, method, **arg):
@@ -387,7 +388,7 @@ class BoxDotNet(object):
             except AttributeError:
                 pass
             for f in file_list:
-                if f["file_name"] == "metadata.xml":
+                if f["file_name"] == ".metadata.xml":
                     self.metadata_id = f["id"]
                     metaNode = XMLNode.parseXML(self.download(self.metadata_id))
         else:

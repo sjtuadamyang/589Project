@@ -6,6 +6,7 @@ import gdr_yyt
 import os.path
 import os
 import sys
+import logging
 
 class CVError(Exception):
     def __init__(self, value):
@@ -101,6 +102,8 @@ class cloudview:
         print 'Current Command: '+command0
         command = command0.split()
         try:
+            if command == []:
+                continue
             if command[0] == 'sync':
                 self.sync()
                 continue
@@ -143,7 +146,7 @@ class cloudview:
 
     def __init__(self):
         try:
-            f = open('./metadata.xml', 'rb')
+            f = open('./.metadata.xml', 'rb')
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
             try:
                 getattr(self.metadata.view[0], 'file')
@@ -192,7 +195,7 @@ class cloudview:
                 j=j+1
                 continue
             if local_entry['id'] > server_entry['id']:
-                """"""
+                """:)"""
                 if l_ts>s_ts:
                     #delete server files
                     if server_entry.primary[0]['type']=='box':
@@ -205,7 +208,7 @@ class cloudview:
                 j=j+1
                 continue
             if local_entry['id'] < server_entry['id']:
-                """"""
+                """:)"""
                 #delete local files
                 fullpath = self.cv_location + local_entry['fullpath']
                 os.system('rm '+fullpath)
@@ -255,17 +258,17 @@ class cloudview:
         if l_ts<s_ts:
             self.metadata = self.ser_metadata
             #write down to metadata.xml
-            f = open('metadata.xml', 'wb')
+            f = open('.metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
         if l_ts>s_ts:
             #write down to metadata.xml
-            f = open('metadata.xml', 'wb')
+            f = open('.metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
             #upload self.metalist to all servers
-            self.client_gdr.setmetadata('metadata.xml')
-            self.client_box.setmetadata('metadata.xml')
+            self.client_gdr.setmetadata('.metadata.xml')
+            self.client_box.setmetadata('.metadata.xml')
 
 
     def __get_filelist(self, metadata):
@@ -302,6 +305,7 @@ class cloudview:
                 list += file['title']+' '
 
         #print "curFolderNode name is"+str(self.curFolderNode.name)
+       
         list += self.curFolderNode.get_child()
         print list
 
@@ -393,7 +397,7 @@ class cloudview:
             self.cv_current_dir='/'
 
     def write_meta(self):
-        f = open('metadata.xml', 'wb')
+        f = open('.metadata.xml', 'wb')
         if not f:
             raise CVError("metadata.xml not exist")
         f.write(self.metadata.convertXML())
@@ -430,7 +434,7 @@ class cloudview:
             self.local_file = self.__get_filelist(self.metadata)
             #write the metadata to './metadata.xml'
             #it seems we do not need to write at this time
-            f = open('metadata.xml', 'wb')
+            f = open('.metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
         self.initialized = True

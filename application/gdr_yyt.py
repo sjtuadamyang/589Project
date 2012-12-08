@@ -33,9 +33,9 @@ class GOOGLE_VIEW:
     metadata_url = ''
     credentials = None
     def __init__(self):
-       if glob.glob('GOOGLE_CREDENTIAL'):
+       if glob.glob('.GOOGLE_CREDENTIAL'):
             def get_stored_credentials():
-                 f = open('GOOGLE_CREDENTIAL', 'r+')
+                 f = open('.GOOGLE_CREDENTIAL', 'r+')
                  cred = f.read();
                  f.close()
                  return cred
@@ -46,11 +46,11 @@ class GOOGLE_VIEW:
         flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
         print 'Go to the following link in your browser: '+ authorize_url
-        webbrowser.open_new_tab(authorize_url);
+        #webbrowser.open_new_tab(authorize_url);
         code = raw_input('Enter verification code: ').strip()
         self.credentials = flow.step2_exchange(code)
         # def store_credentials(credentials):
-        f = open('GOOGLE_CREDENTIAL', 'w+')
+        f = open('.GOOGLE_CREDENTIAL', 'w+')
         f.write(self.credentials.to_json())
         f.close()
         self._build_service();
@@ -66,7 +66,7 @@ class GOOGLE_VIEW:
         resp, content = self.Drive_Service._http.request(download_url)
         if resp.status == 200:
             #print 'Download Succeed'
-            if path == 'metadata.xml':
+            if path == '.metadata.xml':
                 self.metadata = XMLNode.parseXML(content, True)
                 return self.metadata
                 
@@ -87,7 +87,7 @@ class GOOGLE_VIEW:
         result = []
         page_token = None
         if not self.metadata_id == '':
-            return (self.download(self.metadata_url, 'metadata.xml'))
+            return (self.download(self.metadata_url, '.metadata.xml'))
         while True:
             try:
                 param = {}
@@ -104,10 +104,10 @@ class GOOGLE_VIEW:
         #print 'titles in google drive'
         for tmp in result:
             #print tmp['title']
-            if tmp['title'] == 'metadata.xml':
+            if tmp['title'] == '.metadata.xml':
                 self.metadata_id = tmp['id']
                 self.metadata_url = tmp['downloadUrl']
-                return (self.download(tmp['downloadUrl'], 'metadata.xml'))
+                return (self.download(tmp['downloadUrl'], '.metadata.xml'))
                 break
         return None
 
