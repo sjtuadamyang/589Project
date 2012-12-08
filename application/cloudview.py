@@ -519,13 +519,16 @@ class cloudview:
                 if i== '1':
                     tmp = ['box', '.Token'+str(num_accounts)]
                     self.client.append(boxdotnet.BoxDotNet())
+                    self.config.append(['box', num_accounts])
                 elif i == '2':
                     tmp = ['gdr', '.Token'+str(num_accounts)]
                     self.client.append(gdr_yyt.GOOGLE_VIEW())
+                    self.config.append(['gdr', num_accounts])
                 else:
                     print 'Account not supported'
                     continue
                 num_accounts = num_accounts+1
+                
                 print 'Continue adding new accounts? y for Yes'
                 i = raw_input()
                 if i != 'y':
