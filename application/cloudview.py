@@ -352,6 +352,8 @@ class cloudview:
         self.metadata.view[0].file.append(file)
         #print self.metadata.convertXML()
 
+
+
     def mkdir(self, dirname):
         fspath = self.cv_location+self.cv_current_dir+dirname
         title = os.path.basename(dirname)
@@ -367,6 +369,17 @@ class cloudview:
         #print self.cv_location+'.av'
         #os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
         #self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
+        #add a .av file to current metadata list
+        try:
+            getattr(self.metadata.view[0], 'file')
+        except AttributeError:
+            setattr(self.metadata.view[0], 'file', [])
+
+        file = boxdotnet.XMLNode() 
+        file.elementName = 'file'
+        file['title']='.av'
+        file['fullpath']=self.cv_current_dir+'.av'
+        self.metadata.view[0].file.append(file)
         self.cd('../')
 
     def delete(self, filename):
