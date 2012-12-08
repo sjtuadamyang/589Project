@@ -555,6 +555,7 @@ def main(argv):
     #cv.init()
     cv.sync()
     cv.run(argv)
+    cv.sync()
     cv.write_meta()
 
 if __name__ == "__main__":
