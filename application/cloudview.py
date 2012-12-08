@@ -181,8 +181,8 @@ class cloudview:
                 if tmp == 2:
                     tmp = 0
                     account_num  = account_num+1
-                    self.config.append(account)
-                
+                    self.config.append([account[0], account[1]])
+                    print self.config
         except IOError:
             print 'no file named .config'
         self.init()
@@ -294,7 +294,7 @@ class cloudview:
                         y.download(server_entry.primary[0]['download_url'], self.cv_location+server_entry['fullpath'])
                 else:
                     #delete all remaining files
-                    x.delete(server_entry.primary[0]['file_id'])
+                    y.delete(server_entry.primary[0]['file_id'])
                     '''
                     if server_entry.primary[0]['type']=='box':
                         self.client_box.delete(server_entry.primary[0]['file_id'])
@@ -479,7 +479,8 @@ class cloudview:
         if not f:
             raise CVError('.config file not exist')
         for x in self.config:
-            f.write(x[0]+' '+str(x[1]))
+            print x
+            f.write(x[0]+' '+str(x[1])+' ')
         f.close
 
     def init(self):
@@ -540,8 +541,8 @@ class cloudview:
         """all the client do authentication"""
         file_idex = 0
         print 'length of client is '+str(len(self.client))
+        print self.config
         if len(self.client)==0:
-            print self.config
             for x in self.config:
                 if x[0] == 'box':
                     tmp = ['box', x[1]]
@@ -549,7 +550,7 @@ class cloudview:
                 elif x[0] == 'gdr':
                     tmp = ['gdr', x[1]]
                     self.client.append(gdr_yyt.GOOGLE_VIEW())
-                    
+        print self.config, '<------------Here'
         print 'length of client is '+str(len(self.client))
         for x in self.client:
             print 'x in client x.authentication is '+str(x.authenticated)

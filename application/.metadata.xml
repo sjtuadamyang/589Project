@@ -1,4 +1,7 @@
 <?xml version="1.0" ?>
 <metadata>
-    <view cur_id="1" ts="0"/>
+    <view cur_id="3" ts="1355007320">
+        <file fullpath="/a/.av" title=".av"/>
+        <file fullpath="/a/b/.av" title=".av"/>
+    </view>
 </metadata>
