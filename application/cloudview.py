@@ -196,14 +196,14 @@ class cloudview:
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
-            x = self.client(int(local_entry.primary[0]['type']))
-            y = self.client(int(server_entry.primary[0]['type']))
             if local_entry['title'] == '.av':
                 i=i+1
                 continue
             if  server_entry['title'] == '.av':
                 j=j+1
                 continue
+            x = self.client(int(local_entry.primary[0]['type']))
+            y = self.client(int(server_entry.primary[0]['type']))
             if local_entry['id'] == server_entry['id']:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
@@ -476,7 +476,7 @@ class cloudview:
         if not f:
             raise CVError('.config file not exist')
         for x in self.config:
-            f.write(x[0]+' '+x[1])
+            f.write(x[0]+' '+str(x[1]))
         f.close
 
     def init(self):
