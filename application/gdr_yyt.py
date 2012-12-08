@@ -37,10 +37,10 @@ class GOOGLE_VIEW:
     def __init__(self):
         pass
 
-    def recover_session(self):
-        if glob.glob('.GOOGLE_CREDENTIAL'):
+    def recover_session(self,fn):
+        if glob.glob(fn):
             def get_stored_credentials():
-                f = open('.GOOGLE_CREDENTIAL', 'r+')
+                f = open(fn, 'r+')
                 cred = f.read();
                 f.close()
                 return cred
@@ -50,7 +50,7 @@ class GOOGLE_VIEW:
         return False
 
     def authenticate(self, fn):
-        if self.recover_session():
+        if self.recover_session(fn):
             return
         flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
