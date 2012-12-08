@@ -474,7 +474,7 @@ class cloudview:
         if not f:
             raise CVError('.config file not exist')
         for x in self.config:
-            f.write(x[0], x[1])
+            f.write(x[0]+' '+x[1])
         f.close
 
     def init(self):

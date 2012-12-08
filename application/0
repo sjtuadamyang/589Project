@@ -59,7 +59,7 @@ class GOOGLE_VIEW:
         code = raw_input('Enter verification code: ').strip()
         self.credentials = flow.step2_exchange(code)
         # def store_credentials(credentials):
-        f = open(fn, 'w+')
+        f = open('.GOOGLE_CREDENTIAL', 'w+')
         f.write(self.credentials.to_json())
         f.close()
         self._build_service();
