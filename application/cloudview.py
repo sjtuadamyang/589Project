@@ -173,10 +173,13 @@ class cloudview:
             tmp = 0
             account_num = 0
             account = [0, 0] #['box'/'gdr', filename]
-            for x in config:
+            tmp_words = config.read()
+            for x in tmp_words.split():
                 account[tmp] = x
+                print 'x=', x
                 tmp = tmp +1
                 if tmp == 2:
+                    tmp = 0
                     account_num  = account_num+1
                     self.config.append(account)
                 
@@ -202,8 +205,8 @@ class cloudview:
             if  server_entry['title'] == '.av':
                 j=j+1
                 continue
-            x = self.client(int(local_entry.primary[0]['type']))
-            y = self.client(int(server_entry.primary[0]['type']))
+            x = self.client[int(local_entry.primary[0]['type'])]
+            y = self.client[int(server_entry.primary[0]['type'])]
             if local_entry['id'] == server_entry['id']:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
@@ -259,7 +262,7 @@ class cloudview:
                 local_entry = self.local_file[index]
                 if local_entry['title'] == '.av':
                     continue
-                x = self.client(int(local_entry.primary[0]['type']))
+                x = self.client[int(local_entry.primary[0]['type'])]
                 if l_ts<s_ts:
                     #delete all remain files
                     fullpath = self.cv_location + local_entry['fullpath']
@@ -281,7 +284,7 @@ class cloudview:
                 server_entry = self.server_file[index]
                 if server_entry['title'] == '.av':
                     continue
-                y = self.client(int(server_entry.primary[0]['type']))
+                y = self.client[int(server_entry.primary[0]['type'])]
                 if l_ts<s_ts:
                     #download all remaining files and update folder tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
@@ -536,6 +539,17 @@ class cloudview:
 
         """all the client do authentication"""
         file_idex = 0
+        print 'length of client is '+str(len(self.client))
+        if len(self.client)==0:
+            print self.config
+            for x in self.config:
+                if x[0] == 'box':
+                    tmp = ['box', x[1]]
+                    self.client.append(boxdotnet.BoxDotNet())
+                elif x[0] == 'gdr':
+                    tmp = ['gdr', x[1]]
+                    self.client.append(gdr_yyt.GOOGLE_VIEW())
+                    
         print 'length of client is '+str(len(self.client))
         for x in self.client:
             print 'x in client x.authentication is '+str(x.authenticated)
