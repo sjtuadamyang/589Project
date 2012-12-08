@@ -309,14 +309,8 @@ class cloudview:
             f.write(self.metadata.convertXML())
             f.close()
             #upload self.metalist to all servers
-<<<<<<< HEAD
             for x in self.client():
-                                x.setmetadata('.metadata.xml')
-=======
-            print 'flag'
-            self.client_gdr.setmetadata('.metadata.xml')
-            self.client_box.setmetadata('.metadata.xml')
->>>>>>> 4a976686d05224ea6fb935ae152a30811b3d10a2
+                x.setmetadata('.metadata.xml')
 
 
     def __get_filelist(self, metadata):
@@ -485,9 +479,11 @@ class cloudview:
 
     def init(self):
         """all the client do authentication"""
+        file_idex = 0
         for x in self.client:
             if not x.authentication:
-                x.authenticate()
+                x.authenticate('.Token'+str(file_idex))
+            file_idex = file_idex +1
         '''if not self.client_box.authenticated:
             self.client_box.authenticate()
         if not self.client_gdr.Drive_Service:
