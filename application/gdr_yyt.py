@@ -35,6 +35,9 @@ class GOOGLE_VIEW:
     metadata_url = ''
     credentials = None
     def __init__(self):
+       #do nothing
+
+    def recover_session(self):
        if glob.glob('.GOOGLE_CREDENTIAL'):
             def get_stored_credentials():
                  f = open('.GOOGLE_CREDENTIAL', 'r+')
@@ -43,8 +46,12 @@ class GOOGLE_VIEW:
                  return cred
             self.credentials = oauth2client.client.Credentials.new_from_json(get_stored_credentials())
             self._build_service();
-        
-    def authenticate(self):
+            return True
+        return False
+
+    def authenticate(self, fn):
+        if self.recover_session():
+            return
         flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
         print 'Go to the following link in your browser: '+ authorize_url
