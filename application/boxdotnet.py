@@ -210,8 +210,8 @@ class BoxDotNet(object):
 
             # open url
             url = "http://www.box.net/api/1.0/auth/%s" % ticket
-            webbrowser.open_new_tab(url)
-            raw_input()
+            #webbrowser.open_new_tab(url)
+            raw_input(url)
 
             # get token
             rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)

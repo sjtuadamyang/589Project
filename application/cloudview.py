@@ -102,6 +102,8 @@ class cloudview:
         print 'Current Command: '+command0
         command = command0.split()
         try:
+            if command == []:
+                continue
             if command[0] == 'sync':
                 self.sync()
                 continue
