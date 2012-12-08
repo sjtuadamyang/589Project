@@ -182,7 +182,7 @@ class cloudview:
                 
         except IOError:
             print 'no file named .config'
-
+        self.init()
 
     def sync(self):
         s_ts = self.__retrieve_ser_metadata()
@@ -478,17 +478,7 @@ class cloudview:
         f.close
 
     def init(self):
-        """all the client do authentication"""
-        file_idex = 0
-        for x in self.client:
-            if not x.authentication:
-                x.authenticate('.Token'+str(file_idex))
-            file_idex = file_idex +1
-        '''if not self.client_box.authenticated:
-            self.client_box.authenticate()
-        if not self.client_gdr.Drive_Service:
-            self.client_gdr.authent()
-         '''
+
         if self.metadata == '':
             #init a empty metadata file
             """
@@ -538,6 +528,15 @@ class cloudview:
                 i = raw_input()
                 if i != 'y':
                     Continue = False
+
+        """all the client do authentication"""
+        file_idex = 0
+        print 'length of client is '+str(len(self.client))
+        for x in self.client:
+            print 'x in client x.authentication is '+str(x.authentication)
+            if not x.authentication:
+                x.authenticate('.Token'+str(file_idex))
+            file_idex = file_idex +1
             
         self.initialized = True
 
