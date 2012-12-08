@@ -172,10 +172,14 @@ class cloudview:
         i = 0
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
-        #print l_ts, s_ts
+        print l_ts, s_ts
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
+            if local_entry['title'] == '.av' or server_entry['title'] == '.av':
+                i=i+1
+                j=j+1
+                continue
             if local_entry['id'] == server_entry['id']:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
@@ -267,6 +271,7 @@ class cloudview:
             f.write(self.metadata.convertXML())
             f.close()
             #upload self.metalist to all servers
+            print 'flag'
             self.client_gdr.setmetadata('.metadata.xml')
             self.client_box.setmetadata('.metadata.xml')
 
@@ -380,6 +385,7 @@ class cloudview:
         file['title']='.av'
         file['fullpath']=self.cv_current_dir+'.av'
         self.metadata.view[0].file.append(file)
+        self.metadata.view[0]['ts']=str(int(time.time()))
         self.cd('../')
 
     def delete(self, filename):
