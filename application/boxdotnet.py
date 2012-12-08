@@ -213,10 +213,10 @@ class BoxDotNet(object):
             self.token = f.read()
             if self.token == '':
                 print 'we got nothing and we need to login'
-                self.authenticated = False 
+            else:
+                self.authenticated = True
         except IOError:
             print 'no token file been established'
-            self.authenticated = False
 
         if self.authenticated == False:
             self.authenticated = True

@@ -257,14 +257,15 @@ class cloudview:
         if i<len(self.local_file):
             for index in range(i, len(self.local_file)):
                 local_entry = self.local_file[index]
+                if local_entry['title'] == '.av':
+                    continue
+                x = self.client(int(local_entry.primary[0]['type']))
                 if l_ts<s_ts:
                     #delete all remain files
                     fullpath = self.cv_location + local_entry['fullpath']
                     os.system('rm '+fullpath)
                 else:
                     #upload all remain files
-                    if local_entry['title'] == '.av':
-                        continue
                     if x.type=='box':
                         file_id = x.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
                         local_entry.primary[0]['file_id'] = str(file_id)
@@ -278,11 +279,12 @@ class cloudview:
         if j<len(self.server_file):
             for index in range(j, len(self.server_file)):
                 server_entry = self.server_file[index]
+                if server_entry['title'] == '.av':
+                    continue
+                y = self.client(int(server_entry.primary[0]['type']))
                 if l_ts<s_ts:
                     #download all remaining files and update folder tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
-                    if server_entry['title'] == '.av':
-                        continue
                     if y.type=='box':
                         y.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])
                     if y.type=='gdr':
@@ -309,7 +311,7 @@ class cloudview:
             f.write(self.metadata.convertXML())
             f.close()
             #upload self.metalist to all servers
-            for x in self.client():
+            for x in self.client:
                 x.setmetadata('.metadata.xml')
 
 
