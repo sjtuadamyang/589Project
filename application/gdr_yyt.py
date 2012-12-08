@@ -19,7 +19,9 @@ class NeedLoginException():
   """test Needs to call autenti"""
 
 class GOOGLE_VIEW:
+    type = 'gdr'
     metadata = []
+    authenticated = False
     REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
     SCOPES = 'https://www.googleapis.com/auth/drive'
     #'https://www.googleapis.com/auth/userinfo.email',
@@ -42,7 +44,7 @@ class GOOGLE_VIEW:
             self.credentials = oauth2client.client.Credentials.new_from_json(get_stored_credentials())
             self._build_service();
         
-    def authent(self):
+    def authenticate(self):
         flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
         print 'Go to the following link in your browser: '+ authorize_url
@@ -59,6 +61,7 @@ class GOOGLE_VIEW:
         http = httplib2.Http()
         http = self.credentials.authorize(http)
         self.Drive_Service = build('drive', 'v2', http=http)
+        self.authenticated = True
 
     def download(self, download_url, path):
         if  not self.Drive_Service: 

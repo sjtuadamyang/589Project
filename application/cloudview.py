@@ -71,9 +71,11 @@ class folderNode:
         raise CVError("no dir found")
 
 class cloudview:
-    client_box = boxdotnet.BoxDotNet()
-    client_gdr = gdr_yyt.GOOGLE_VIEW()
+    #client_box = boxdotnet.BoxDotNet()
+    #client_gdr = gdr_yyt.GOOGLE_VIEW()
     metadata = ''
+    config = []#[type, Token_fn]
+    client = []
     ser_metadata = ''
     local_file = []
     server_file = []
@@ -84,9 +86,10 @@ class cloudview:
     curFolderNode = folderRoot
 
     def delete_all(self):
-      self.client_gdr.deleteall()
-      self.client_box.deleteall()
-
+      #self.client_gdr.deleteall()
+      #self.client_box.deleteall()
+      for x in self.client():
+          x.deleteall()
 
     def run(self, testcase):
       f = None
@@ -112,7 +115,8 @@ class cloudview:
                 continue
             if command[0] == 'add':
                 if len(command) < 3:
-                    raise CVError("add <file path> <primary type>")
+                    print 'Current have ', len(self.config), ' accounts'
+                    raise CVError("add <file path> <account index>")
                     continue
                 self.add(command[1], command[2])
                 continue
@@ -164,6 +168,22 @@ class cloudview:
         self.cv_location = os.path.dirname(os.path.realpath(__file__))
         self.cv_current_dir = '/'
 
+        try:
+            config = open('./.config', 'rb')
+            tmp = 0
+            account_num = 0
+            account = [0, 0] #['box'/'gdr', filename]
+            for x in config:
+                account[tmp] = x
+                tmp = tmp +1
+                if tmp == 2:
+                    account_num  = account_num+1
+                    self.config.append(account)
+                
+        except IOError:
+            print 'no file named .config'
+
+
     def sync(self):
         s_ts = self.__retrieve_ser_metadata()
         self.server_file = self.__get_filelist(self.ser_metadata) 
@@ -176,21 +196,31 @@ class cloudview:
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
+            x = self.client(int(local_entry.primary[0][['type']))
+            y = self.client(int(server_entry.primary[0][['type']))
             if local_entry['id'] == server_entry['id']:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
+                    x.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
+                    '''
                     if local_entry.primary[0]['type']=='box':
                         self.client_box.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
                     if local_entry.primary[0]['type']=='gdr':
                         self.client_gdr.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
+                    '''
                 if int(local_entry['ts'])<int(server_entry['ts']):
                     #download from server and add path to current path tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
+                    if x.type == 'box':
+                        x.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
+                    if x.type == 'gdr':
+                        x.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
+                    '''
                     if local_entry.primary[0]['type']=='box':
                         self.client_box.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
                     if local_entry.primary[0]['type']=='gdr':
                         self.client_gdr.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
-                    
+                    '''
                 i=i+1
                 j=j+1
                 continue
@@ -198,10 +228,13 @@ class cloudview:
                 """:)"""
                 if l_ts>s_ts:
                     #delete server files
+                    x.delete(server_entry.primary[0]['file_id'])
+                    '''
                     if server_entry.primary[0]['type']=='box':
                         self.client_box.delete(server_entry.primary[0]['file_id'])
                     if server_entry.primary[0]['type']=='gdr':
                         self.client_gdr.delete(server_entry.primary[0]['file_id'])
+                    '''
                 else:
                     #not possible, we need to raise an exception
                     raise CVError("l_ts < s_ts happended, something wrong with our logic")
@@ -226,11 +259,11 @@ class cloudview:
                     #upload all remain files
                     if local_entry['title'] == '.av':
                         continue
-                    if local_entry.primary[0]['type']=='box':
-                        file_id = self.client_box.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
+                    if x.type=='box':
+                        file_id = x.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
                         local_entry.primary[0]['file_id'] = str(file_id)
-                    if local_entry.primary[0]['type']=='gdr':
-                        file_id, download_url = self.client_gdr.upload(self.cv_location + local_entry['fullpath'])
+                    if x.type=='gdr':
+                        file_id, download_url = x.upload(self.cv_location + local_entry['fullpath'])
                         local_entry.primary[0]['file_id'] = str(file_id)
                         #print download_url
                         local_entry.primary[0]['download_url'] = download_url
@@ -244,16 +277,19 @@ class cloudview:
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
                     if server_entry['title'] == '.av':
                         continue
-                    if server_entry.primary[0]['type']=='box':
-                        self.client_box.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])
-                    if server_entry.primary[0]['type']=='gdr':
-                        self.client_gdr.download(server_entry.primary[0]['download_url'], self.cv_location+server_entry['fullpath'])
+                    if y.type=='box':
+                        y.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])
+                    if y.type=='gdr':
+                        y.download(server_entry.primary[0]['download_url'], self.cv_location+server_entry['fullpath'])
                 else:
                     #delete all remaining files
+                    x.delete(server_entry.primary[0]['file_id'])
+                    '''
                     if server_entry.primary[0]['type']=='box':
                         self.client_box.delete(server_entry.primary[0]['file_id'])
                     if server_entry.primary[0]['type']=='gdr':
                         self.client_gdr.delete(server_entry.primary[0]['file_id'])
+                    '''
         #sync metalist
         if l_ts<s_ts:
             self.metadata = self.ser_metadata
@@ -267,8 +303,8 @@ class cloudview:
             f.write(self.metadata.convertXML())
             f.close()
             #upload self.metalist to all servers
-            self.client_gdr.setmetadata('.metadata.xml')
-            self.client_box.setmetadata('.metadata.xml')
+            for x in self.client():
+                                x.setmetadata('.metadata.xml')
 
 
     def __get_filelist(self, metadata):
@@ -282,6 +318,15 @@ class cloudview:
 
     def __retrieve_ser_metadata(self):
         """get the most updated server metadata"""
+        max_ts = -1
+        for x in self.client():
+            sermeta = x.getmetadata()
+            tmp_ts = 0 if (sermeta==None) else int(sermeta.view[0]['ts'])
+            if (tmp_ts > maxmeta):
+              max_ts = tmp_ts
+              self.ser_metadata = sermeta
+        return max_ts
+        '''
         boxmeta = self.client_box.getmetadata()
         box_ts = 0 if (boxmeta==None) else int(boxmeta.view[0]['ts'])
         gdrmeta = self.client_gdr.getmetadata()
@@ -292,6 +337,8 @@ class cloudview:
         else:
             self.ser_metadata = gdrmeta
             return gdr_ts
+        '''
+
 
     def ls(self):
         """not implemented yet"""
@@ -402,14 +449,23 @@ class cloudview:
             raise CVError("metadata.xml not exist")
         f.write(self.metadata.convertXML())
         f.close
+        f = open ('.config', 'wb')
+        if not f:
+            raise CVError('.config file not exist')
+        for x in self.config:
+            f.write(x[0], x[1])
+        f.close
 
     def init(self):
         """all the client do authentication"""
-        if not self.client_box.authenticated:
+        for x in self.client:
+            if not x.authentication:
+                x.authenticate()
+        '''if not self.client_box.authenticated:
             self.client_box.authenticate()
         if not self.client_gdr.Drive_Service:
             self.client_gdr.authent()
-
+         '''
         if self.metadata == '':
             #init a empty metadata file
             """
@@ -437,6 +493,30 @@ class cloudview:
             f = open('.metadata.xml', 'wb')
             f.write(self.metadata.convertXML())
             f.close()
+        if self.config == []:
+            # needs to login first
+            print 'Login in using box account or google drive'
+            num_accounts = 0
+            Continue = True
+            while (Continue):
+                print 'Choose account type: 1) Box 2) Google Drive'
+                i = raw_input();
+                if i== '1':
+                    tmp = ['box', '.Token'+str(num_accounts)]
+                    self.client.append(boxdotnet.BoxDotNet())
+                else:
+                    if i = '2':
+                        tmp = ['gdr', '.Token'+str(num_accounts)]
+                        self.client.append(gdr_yyt.GOOGLE_VIEW())
+                    else:
+                        print 'Account not supported'
+                        continue
+                num_accounts = num_accounts+1
+                print 'Continue adding new accounts? y for Yes'
+                i = raw_input()
+                if i != 'y':
+                    Continue = False
+            
         self.initialized = True
 
     def featureTest(self):
