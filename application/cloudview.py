@@ -165,7 +165,7 @@ class cloudview:
             print 'no file named .metadata.xml'
         except Exception:
             print '.metadata.xml is garbage'
-        self.cv_location = os.path.dirname(os.path.realpath(__file__))
+        self.cv_location = os.getcwd()
         self.cv_current_dir = '/'
 
         try:
@@ -192,12 +192,18 @@ class cloudview:
         i = 0
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
-        #print l_ts, s_ts
+        print l_ts, s_ts
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
             x = self.client(int(local_entry.primary[0][['type']))
             y = self.client(int(server_entry.primary[0][['type']))
+            if local_entry['title'] == '.av':
+                i=i+1
+                continue
+            if  server_entry['title'] == '.av':
+                j=j+1
+                continue
             if local_entry['id'] == server_entry['id']:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
@@ -303,8 +309,14 @@ class cloudview:
             f.write(self.metadata.convertXML())
             f.close()
             #upload self.metalist to all servers
+<<<<<<< HEAD
             for x in self.client():
                                 x.setmetadata('.metadata.xml')
+=======
+            print 'flag'
+            self.client_gdr.setmetadata('.metadata.xml')
+            self.client_box.setmetadata('.metadata.xml')
+>>>>>>> 4a976686d05224ea6fb935ae152a30811b3d10a2
 
 
     def __get_filelist(self, metadata):
@@ -399,6 +411,8 @@ class cloudview:
         self.metadata.view[0].file.append(file)
         #print self.metadata.convertXML()
 
+
+
     def mkdir(self, dirname):
         fspath = self.cv_location+self.cv_current_dir+dirname
         title = os.path.basename(dirname)
@@ -408,12 +422,25 @@ class cloudview:
         if not title==dirname:
             raise CVError("filename can not be a path name")
         command = 'mkdir '+fspath
+        print 'fspath is = '+fspath
         os.system(command)
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
         self.cd(dirname)
         #print self.cv_location+'.av'
         #os.system('touch '+self.cv_location+self.cv_current_dir+'.av')
         #self.add(self.cv_location+self.cv_current_dir+'.av', 'box')
+        #add a .av file to current metadata list
+        try:
+            getattr(self.metadata.view[0], 'file')
+        except AttributeError:
+            setattr(self.metadata.view[0], 'file', [])
+
+        file = boxdotnet.XMLNode() 
+        file.elementName = 'file'
+        file['title']='.av'
+        file['fullpath']=self.cv_current_dir+'.av'
+        self.metadata.view[0].file.append(file)
+        self.metadata.view[0]['ts']=str(int(time.time()))
         self.cd('../')
 
     def delete(self, filename):

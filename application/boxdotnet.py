@@ -205,13 +205,14 @@ class BoxDotNet(object):
 
     def authenticate(self):
         if self.authenticated == False:
+            self.authenticated = True
             # get ticket
             rsp = self.get_ticket (api_key=self.API_KEY)
             ticket = rsp.ticket[0].elementText
 
             # open url
             url = "http://www.box.net/api/1.0/auth/%s" % ticket
-            #webbrowser.open_new_tab(url)
+            webbrowser.open_new_tab(url)
             raw_input(url)
 
             # get token
