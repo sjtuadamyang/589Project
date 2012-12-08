@@ -161,7 +161,7 @@ class cloudview:
             print 'no file named .metadata.xml'
         except Exception:
             print '.metadata.xml is garbage'
-        self.cv_location = os.path.dirname(os.path.realpath(__file__))
+        self.cv_location = os.getcwd()
         self.cv_current_dir = '/'
 
     def sync(self):
@@ -368,6 +368,7 @@ class cloudview:
         if not title==dirname:
             raise CVError("filename can not be a path name")
         command = 'mkdir '+fspath
+        print 'fspath is = '+fspath
         os.system(command)
         self.folderRoot.add_child_path(self.cv_current_dir+dirname+'/')
         self.cd(dirname)
