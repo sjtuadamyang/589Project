@@ -173,6 +173,7 @@ class BoxDotNet(object):
     def __init__(self, browser="firefox"):
         self.browser = browser
         self.__handlerCache={}
+        """
         try:
             f = open('.Token', 'rb')
             self.token = f.read()
@@ -182,6 +183,7 @@ class BoxDotNet(object):
         except IOError:
             print 'no token file been established'
             self.authenticated = False
+        """
 
     #encodes the args and handles params[] supplied in a list
     @classmethod
@@ -203,7 +205,19 @@ class BoxDotNet(object):
 
         raise BoxDotNetError ("Box.net returned [%s] for action [%s]" % (status, method))
 
-    def authenticate(self):
+    def authenticate(self, Token):
+        if not Token:
+            raise Exception("You must pass a Token name")
+        try:
+            f = open(Token, 'rb')
+            self.token = f.read()
+            if self.token == '':
+                print 'we got nothing and we need to login'
+                self.authenticated = False 
+        except IOError:
+            print 'no token file been established'
+            self.authenticated = False
+
         if self.authenticated == False:
             self.authenticated = True
             # get ticket
@@ -222,7 +236,7 @@ class BoxDotNet(object):
             print "get token response: "
             print "token is "+str(self.token)
             # write token to file
-            f = open('.Token', 'wb')
+            f = open(Token, 'wb')
             f.write(self.token)
 
     def __getattr__(self, method, **arg):
