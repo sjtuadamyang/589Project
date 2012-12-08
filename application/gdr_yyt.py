@@ -21,7 +21,7 @@ class NeedLoginException():
 class GOOGLE_VIEW:
     type = 'gdr'
     metadata = []
-    authenticated = False
+    authentication = False
     REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
     SCOPES = 'https://www.googleapis.com/auth/drive'
     #'https://www.googleapis.com/auth/userinfo.email',
@@ -68,7 +68,7 @@ class GOOGLE_VIEW:
         http = httplib2.Http()
         http = self.credentials.authorize(http)
         self.Drive_Service = build('drive', 'v2', http=http)
-        self.authenticated = True
+        self.authentication = True
 
     def download(self, download_url, path):
         if  not self.Drive_Service: 
