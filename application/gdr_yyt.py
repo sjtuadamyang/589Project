@@ -35,15 +35,15 @@ class GOOGLE_VIEW:
     metadata_url = ''
     credentials = None
     def __init__(self):
-       #do nothing
+        pass
 
     def recover_session(self):
-       if glob.glob('.GOOGLE_CREDENTIAL'):
+        if glob.glob('.GOOGLE_CREDENTIAL'):
             def get_stored_credentials():
-                 f = open('.GOOGLE_CREDENTIAL', 'r+')
-                 cred = f.read();
-                 f.close()
-                 return cred
+                f = open('.GOOGLE_CREDENTIAL', 'r+')
+                cred = f.read();
+                f.close()
+                return cred
             self.credentials = oauth2client.client.Credentials.new_from_json(get_stored_credentials())
             self._build_service();
             return True

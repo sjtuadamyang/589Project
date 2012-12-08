@@ -196,8 +196,8 @@ class cloudview:
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
-            x = self.client(int(local_entry.primary[0][['type']))
-            y = self.client(int(server_entry.primary[0][['type']))
+            x = self.client(int(local_entry.primary[0]['type']))
+            y = self.client(int(server_entry.primary[0]['type']))
             if local_entry['title'] == '.av':
                 i=i+1
                 continue
@@ -325,10 +325,10 @@ class cloudview:
     def __retrieve_ser_metadata(self):
         """get the most updated server metadata"""
         max_ts = -1
-        for x in self.client():
+        for x in self.client:
             sermeta = x.getmetadata()
             tmp_ts = 0 if (sermeta==None) else int(sermeta.view[0]['ts'])
-            if (tmp_ts > maxmeta):
+            if (tmp_ts > max_ts):
               max_ts = tmp_ts
               self.ser_metadata = sermeta
         return max_ts
@@ -527,13 +527,12 @@ class cloudview:
                 if i== '1':
                     tmp = ['box', '.Token'+str(num_accounts)]
                     self.client.append(boxdotnet.BoxDotNet())
+                elif i == '2':
+                    tmp = ['gdr', '.Token'+str(num_accounts)]
+                    self.client.append(gdr_yyt.GOOGLE_VIEW())
                 else:
-                    if i = '2':
-                        tmp = ['gdr', '.Token'+str(num_accounts)]
-                        self.client.append(gdr_yyt.GOOGLE_VIEW())
-                    else:
-                        print 'Account not supported'
-                        continue
+                    print 'Account not supported'
+                    continue
                 num_accounts = num_accounts+1
                 print 'Continue adding new accounts? y for Yes'
                 i = raw_input()
