@@ -196,7 +196,7 @@ class cloudview:
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
-            x = self.client(int(local_entry.primary[0][['type']))
+            x = self.client(int(local_entry.primary[0][['type']]))
             y = self.client(int(server_entry.primary[0][['type']))
             if local_entry['title'] == '.av':
                 i=i+1
