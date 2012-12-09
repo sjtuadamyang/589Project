@@ -102,7 +102,7 @@ class cloudview:
 
     def sync_thread_worker(self):
         while 1:
-            if(self.wakeup.wait(30)):
+            if(self.wakeup.wait(5)):
                 break
             self.wakeup.clear()
             self.mutex.acquire()
@@ -176,7 +176,7 @@ class cloudview:
                 self.wakeup.set()
                 return
         os.system(command0)
-        self.wakeup.set()
+        #self.wakeup.set()
 
     def __init__(self):
         self.sync_thread = Thread(target=self.sync_thread_worker)
@@ -317,7 +317,9 @@ class cloudview:
             for index in range(j, len(self.server_file)):
                 server_entry = self.server_file[index]
                 logging.debug("in the j < len loop, l_ts is %d, s_ts is %d", l_ts, s_ts)
-                if server_entry['title'] == '.av' and l_ts < s_ts:
+                if server_entry['title'] == '.av':
+                    if l_ts > s_ts:
+                        continue
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
                     #print self.cv_location
                     os.system('mkdir '+self.cv_location+os.path.dirname(server_entry['fullpath']))
@@ -376,7 +378,6 @@ class cloudview:
             if (tmp_ts > max_ts):
               max_ts = tmp_ts
               self.ser_metadata = sermeta
-        print max_ts
         return max_ts
         '''
         boxmeta = self.client_box.getmetadata()

@@ -397,7 +397,7 @@ class BoxDotNet(object):
     def getmetadata(self):
         metaNode = None
         if self.metadata_id == None:
-            print "search metadata in server"
+            #print "search metadata in server"
             list_tree = self.__listfile()
             file_list = []
             try:
@@ -414,7 +414,7 @@ class BoxDotNet(object):
 
     def setmetadata(self, meta_path):
         if self.metadata_id == None:
-            metadata_id = self.upload(meta_path, '0')
+            self.metadata_id = self.upload(meta_path, '0')
         else:
             self.replace(self.metadata_id, meta_path)  
     
