@@ -103,6 +103,7 @@ class cloudview:
             self.wakeup.clear()
             self.mutex.acquire()
             print "synchronizing..."
+            self.sync()
             self.mutex.release()
 
     def run(self, testcase):
@@ -110,7 +111,6 @@ class cloudview:
       if testcase:
         print testcase
         f =open(testcase[0], 'r+')
-      self.running = True
       self.sync_thread.start() 
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
