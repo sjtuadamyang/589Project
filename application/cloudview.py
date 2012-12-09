@@ -93,7 +93,7 @@ class cloudview:
     def delete_all(self):
       #self.client_gdr.deleteall()
       #self.client_box.deleteall()
-      for x in self.client():
+      for x in self.client:
           x.deleteall()
 
     def sync_thread_worker(self):
