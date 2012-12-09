@@ -123,9 +123,9 @@ class cloudview:
         try:
             if command == []:
                 continue
-            if command[0] == 'sync':
-                self.sync()
-                continue
+            #if command[0] == 'sync':
+            #    self.sync()
+            #    continue
             if command[0] == 'ls':
                 self.ls()
                 continue
@@ -134,16 +134,22 @@ class cloudview:
                     print 'Current have ', len(self.config), ' accounts'
                     raise CVError("add <file path> <account index>")
                     continue
+                self.mutex.acquire()
                 self.add(command[1], command[2])
+                self.mutex.release()
                 continue
             if command[0] == 'delete':
+                self.mutex.acquire()
                 self.delete(command[1])
+                self.mutex.release()
                 continue
             if command[0]== 'deleteall':
                 self.delete_all()
                 continue
             if command[0] ==  'mkdir':
+                self.mutex.acquire()
                 self.mkdir(command[1])
+                self.mutex.release()
                 continue
             if command[0] == 'cd':
                 self.cd(command[1])
