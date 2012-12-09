@@ -98,7 +98,9 @@ class cloudview:
 
     def sync_thread_worker(self):
         while 1:
-            if(self.wakeup.wait(60)):
+            
+            print "sync thread start"
+            if(self.wakeup.wait(30)):
                 break
             self.wakeup.clear()
             self.mutex.acquire()
@@ -107,6 +109,7 @@ class cloudview:
             self.mutex.release()
 
     def run(self, testcase):
+      print 'New version'
       f = None
       if testcase:
         print testcase
