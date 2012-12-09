@@ -10,6 +10,10 @@ import os
 import sys
 import logging
 import random
+import logging
+
+
+logging.basicConfig(filename='.log', level=logging.DEBUG)
 
 class CVError(Exception):
     def __init__(self, value):
@@ -93,20 +97,19 @@ class cloudview:
     def delete_all(self):
       #self.client_gdr.deleteall()
       #self.client_box.deleteall()
-      for x in self.client():
+      for x in self.client:
           x.deleteall()
 
     def sync_thread_worker(self):
         while 1:
-            
-            print "sync thread start"
-            if(self.wakeup.wait(30)):
+            if(self.wakeup.wait(5)):
                 break
             self.wakeup.clear()
             self.mutex.acquire()
-            print "synchronizing..."
+            logging.debug("synchronizing")
             self.sync()
             self.mutex.release()
+            logging.debug("sync done")
 
     def run(self, testcase):
       print 'New version'
@@ -174,7 +177,7 @@ class cloudview:
                 self.wakeup.set()
                 return
         os.system(command0)
-        self.wakeup.set()
+        #self.wakeup.set()
 
     def __init__(self):
         self.sync_thread = Thread(target=self.sync_thread_worker)
@@ -219,12 +222,10 @@ class cloudview:
     def sync(self):
         s_ts = self.__retrieve_ser_metadata()
         self.server_file = self.__get_filelist(self.ser_metadata) 
-        #print len(self.local_file)
-        #print len(self.server_file)
         i = 0
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
-        print l_ts, s_ts
+        logging.debug("sync func info, l_ts is %d, s_ts is %d", l_ts, s_ts)
         if l_ts == s_ts:
             return
         while (i < len(self.local_file) and j < len(self.server_file)):
@@ -257,7 +258,6 @@ class cloudview:
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
                     print "download from "+x.type
                     if x.type == 'box':
-                        print "box download"
                         x.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
                     if x.type == 'gdr':
                         x.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
@@ -271,7 +271,6 @@ class cloudview:
                 j=j+1
                 continue
             if local_entry['id'] > server_entry['id']:
-                """:)"""
                 if l_ts>s_ts:
                     #delete server files
                     x.delete(server_entry.primary[0]['file_id'])
@@ -287,7 +286,6 @@ class cloudview:
                 j=j+1
                 continue
             if local_entry['id'] < server_entry['id']:
-                """:)"""
                 #delete local files
                 fullpath = self.cv_location + local_entry['fullpath']
                 os.system('rm '+fullpath)
@@ -319,18 +317,19 @@ class cloudview:
         if j<len(self.server_file):
             for index in range(j, len(self.server_file)):
                 server_entry = self.server_file[index]
-                print "in the j < len loop "
-                print str(l_ts)+" "+str(s_ts)
-                if server_entry['title'] == '.av' and l_ts < s_ts:
+                logging.debug("in the j < len loop, l_ts is %d, s_ts is %d", l_ts, s_ts)
+                if server_entry['title'] == '.av':
+                    if l_ts >= s_ts:
+                        continue
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
-                    print self.cv_location
+                    #print self.cv_location
                     os.system('mkdir '+self.cv_location+os.path.dirname(server_entry['fullpath']))
                     continue
                 y = self.client[int(server_entry.primary[0]['type'])]
                 if l_ts<s_ts:
                     #download all remaining files and update folder tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
-                    print y.type
+                    #print y.type
                     if y.type=='box':
                         print "box download " 
                         y.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])

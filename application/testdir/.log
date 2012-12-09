@@ -1,0 +1,36 @@
+WARNING:oauth2client.util:__init__() takes at most 4 positional arguments (5 given)
+INFO:oauth2client.client:Successfully retrieved access token
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/discovery/v1/apis/drive/v2/rest
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/drive/v2/files?alt=json
+DEBUG:root:sync func info, l_ts is 0, s_ts is 0
+DEBUG:root:synchronizing
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/drive/v2/files?alt=json
+DEBUG:root:sync func info, l_ts is 1355085599, s_ts is 0
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/upload/drive/v2/files?uploadType=resumable&alt=json
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+DEBUG:root:sync done
+DEBUG:root:synchronizing
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/drive/v2/files?alt=json
+DEBUG:root:sync func info, l_ts is 1355085599, s_ts is 1355085599
+DEBUG:root:sync done
+DEBUG:root:synchronizing
+DEBUG:root:sync func info, l_ts is 1355085664, s_ts is 1355085599
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/upload/drive/v2/files?uploadType=resumable&alt=json
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/drive/v2/files/0BzE6ei5-v4A9VFZIYm5RUE9udkk?alt=json
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/upload/drive/v2/files/0BzE6ei5-v4A9VFZIYm5RUE9udkk?uploadType=resumable&alt=json&newRevision=false
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+DEBUG:root:sync done
+DEBUG:root:synchronizing
+DEBUG:root:sync func info, l_ts is 1355085681, s_ts is 1355085664
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/drive/v2/files/0BzE6ei5-v4A9VFZIYm5RUE9udkk?alt=json
+INFO:apiclient.discovery:URL being requested: https://www.googleapis.com/upload/drive/v2/files/0BzE6ei5-v4A9VFZIYm5RUE9udkk?uploadType=resumable&alt=json&newRevision=false
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+WARNING:oauth2client.util:new_request() takes at most 1 positional argument (2 given)
+DEBUG:root:sync done
+DEBUG:root:synchronizing
+DEBUG:root:sync func info, l_ts is 1355085725, s_ts is 1355085681
+DEBUG:root:in the j < len loop, l_ts is 1355085725, s_ts is 1355085681
