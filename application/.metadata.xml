@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <metadata>
-    <view cur_id="3" ts="1355007320">
-        <file fullpath="/a/.av" title=".av"/>
-        <file fullpath="/a/b/.av" title=".av"/>
+    <view cur_id="2" ts="1355010358">
+        <file fullpath="/abc/.av" title=".av"/>
+        <file fullpath="/ef/.av" title=".av"/>
+        <file fullpath="/abc/gdr_yyt.py" id="1" title="gdr_yyt.py" ts="1355010358">
+            <primary download_url="https://doc-10-8g-docs.googleusercontent.com/docs/securesc/dtk5uo0m9h6fldu9kd2qbgjao4vkj28l/8v4l657fpieep668v8q71qg947jiq7sq/1355004000000/02173971456538603057/02173971456538603057/0B_OvI5BwoTVJa0gzZlA4SGhhNG8?h=16653014193614665626&amp;e=download&amp;gd=true" file_id="0B_OvI5BwoTVJa0gzZlA4SGhhNG8" type="0"/>
+        </file>
     </view>
 </metadata>
