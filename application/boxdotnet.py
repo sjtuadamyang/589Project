@@ -397,6 +397,7 @@ class BoxDotNet(object):
     def getmetadata(self):
         metaNode = None
         if self.metadata_id == None:
+            print "search metadata in server"
             list_tree = self.__listfile()
             file_list = []
             try:
@@ -404,11 +405,11 @@ class BoxDotNet(object):
             except AttributeError:
                 pass
             for f in file_list:
-                if f["file_name"] == ".metadata.xml":
+                if f["file_name"] == "id_0.metadata.xml":
                     self.metadata_id = f["id"]
-                    metaNode = XMLNode.parseXML(self.download(self.metadata_id))
+                    metaNode = XMLNode.parseXML(self.download(self.metadata_id, None))
         else:
-            metaNode = XMLNode.parseXML(self.download(self.metadata_id))
+            metaNode = XMLNode.parseXML(self.download(self.metadata_id, None))
         return metaNode
 
     def setmetadata(self, meta_path):

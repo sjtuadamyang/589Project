@@ -1,4 +1,6 @@
 #!/usr/bin/python
+from threading import Thread, Lock, Event
+from time import sleep
 
 import boxdotnet
 import time
@@ -7,6 +9,7 @@ import os.path
 import os
 import sys
 import logging
+
 
 class CVError(Exception):
     def __init__(self, value):
@@ -84,6 +87,8 @@ class cloudview:
     initialized = False
     folderRoot = folderNode('/')
     curFolderNode = folderRoot
+    mutex = Lock()
+    wakeup = Event()
 
     def delete_all(self):
       #self.client_gdr.deleteall()
@@ -91,11 +96,22 @@ class cloudview:
       for x in self.client():
           x.deleteall()
 
+    def sync_thread_worker(self):
+        while 1:
+            if(self.wakeup.wait(10)):
+                break
+            self.wakeup.clear()
+            self.mutex.acquire()
+            print "synchronizing..."
+            self.mutex.release()
+
     def run(self, testcase):
       f = None
       if testcase:
         print testcase
         f =open(testcase[0], 'r+')
+      self.running = True
+      self.sync_thread.start() 
       while (1):
         tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
         if not testcase:
@@ -134,6 +150,7 @@ class cloudview:
                 continue
             if command[0] == 'exit':
                 print 'Existing CloudView'
+                self.wakeup.set()
                 return
         except CVError as e:
             print str(e)
@@ -145,10 +162,13 @@ class cloudview:
                 continue
             else:
                 print "Not continuing, existing CloudView"
+                self.wakeup.set()
                 return
         os.system(command0)
+        self.wakeup.set()
 
     def __init__(self):
+        self.sync_thread = Thread(target=self.sync_thread_worker)
         try:
             f = open('./.metadata.xml', 'rb')
             self.metadata = boxdotnet.XMLNode.parseXML(f.read())
@@ -196,6 +216,8 @@ class cloudview:
         j = 0
         l_ts = int(self.metadata.view[0]['ts'])
         print l_ts, s_ts
+        if l_ts == s_ts:
+            return
         while (i < len(self.local_file) and j < len(self.server_file)):
             local_entry = self.local_file[i]
             server_entry = self.server_file[j]
@@ -203,6 +225,10 @@ class cloudview:
                 i=i+1
                 continue
             if  server_entry['title'] == '.av':
+                if s_ts > l_ts:
+                    self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
+                    print self.cv_location
+                    os.system('mkdir '+self.cv_location+os.path.dirname(server_entry['fullpath']))
                 j=j+1
                 continue
             x = self.client[int(local_entry.primary[0]['type'])]
@@ -220,7 +246,9 @@ class cloudview:
                 if int(local_entry['ts'])<int(server_entry['ts']):
                     #download from server and add path to current path tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
+                    print "download from "+x.type
                     if x.type == 'box':
+                        print "box download"
                         x.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
                     if x.type == 'gdr':
                         x.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
@@ -267,7 +295,7 @@ class cloudview:
                     #delete all remain files
                     fullpath = self.cv_location + local_entry['fullpath']
                     os.system('rm '+fullpath)
-                else:
+                elif l_ts>s_ts:
                     #upload all remain files
                     if x.type=='box':
                         file_id = x.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
@@ -282,17 +310,24 @@ class cloudview:
         if j<len(self.server_file):
             for index in range(j, len(self.server_file)):
                 server_entry = self.server_file[index]
-                if server_entry['title'] == '.av':
+                print "in the j < len loop "
+                print str(l_ts)+" "+str(s_ts)
+                if server_entry['title'] == '.av' and l_ts < s_ts:
+                    self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
+                    print self.cv_location
+                    os.system('mkdir '+self.cv_location+os.path.dirname(server_entry['fullpath']))
                     continue
                 y = self.client[int(server_entry.primary[0]['type'])]
                 if l_ts<s_ts:
                     #download all remaining files and update folder tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
+                    print y.type
                     if y.type=='box':
+                        print "box download " 
                         y.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])
                     if y.type=='gdr':
                         y.download(server_entry.primary[0]['download_url'], self.cv_location+server_entry['fullpath'])
-                else:
+                elif l_ts>s_ts:
                     #delete all remaining files
                     y.delete(server_entry.primary[0]['file_id'])
                     '''
@@ -336,6 +371,7 @@ class cloudview:
             if (tmp_ts > max_ts):
               max_ts = tmp_ts
               self.ser_metadata = sermeta
+        print max_ts
         return max_ts
         '''
         boxmeta = self.client_box.getmetadata()
@@ -567,7 +603,6 @@ class cloudview:
 def main(argv):
     print 'app starts'
     cv = cloudview() 
-    #cv.init()
     cv.sync()
     cv.run(argv)
     cv.sync()
