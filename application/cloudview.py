@@ -279,8 +279,8 @@ class cloudview:
             if local_entry['id'] > server_entry['id']:
                 if l_ts>s_ts:
                     #delete server files
-                    x.delete(server_entry.primary[0]['file_id'])
-                    x1.delete(server_entry.backup[0]['file_id'])
+                    y.delete(server_entry.primary[0]['file_id'])
+                    y1.delete(server_entry.backup[0]['file_id'])
                     '''
                     if server_entry.primary[0]['type']=='box':
                         self.client_box.delete(server_entry.primary[0]['file_id'])
