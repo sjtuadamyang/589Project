@@ -93,6 +93,9 @@ class cloudview:
     curFolderNode = folderRoot
     mutex = Lock()
     wakeup = Event()
+    recovering_mode = '(normal mode)'
+    configured_clients = 0
+    authenticated_clients = 0
 
     def delete_all(self):
       #self.client_gdr.deleteall()
@@ -112,6 +115,10 @@ class cloudview:
             logging.debug("sync done")
 
     def run(self, testcase):
+      if not self.initialized:
+          print 'Initialization failed, exiting Cloudview'
+          return
+      self.sync()
       print 'New version'
       f = None
       if testcase:
@@ -119,7 +126,7 @@ class cloudview:
         f =open(testcase[0], 'r+')
       self.sync_thread.start() 
       while (1):
-        tmp_string = 'Cloudview:'+self.cv_current_dir+'$' 
+        tmp_string = 'Cloudview'+self.recovering_mode+':'+self.cv_current_dir+'$' 
         if not testcase:
             command0 = raw_input(tmp_string)
         else:
@@ -215,6 +222,7 @@ class cloudview:
                     account_num  = account_num+1
                     self.config.append([account[0], account[1]])
                     print self.config
+            self.configured_clients = len(self.config)
         except IOError:
             print 'no file named .config'
         self.init()
@@ -637,6 +645,27 @@ class cloudview:
             # needs to login first
             print 'Login in using box account or google drive'
             num_accounts = 0
+
+            print 'how many account do you have'
+            self.configured_clients = int(raw_input())
+
+            for i in range(0, self.configured_clients):
+                input = '' 
+                while input != '1' and input != '2':
+                    print 'Choose account'+str(i)+' type: 1) Box 2) Google Drive'
+                    input = raw_input();
+
+                if input== '1':
+                    tmp = ['box', '.Token'+str(i)]
+                    self.client.append(boxdotnet.BoxDotNet())
+                    self.config.append(['box', i])
+                elif input == '2':
+                    tmp = ['gdr', '.Token'+str(i)]
+                    self.client.append(gdr_yyt.GOOGLE_VIEW())
+                    self.config.append(['gdr', i])
+                    continue
+
+            """
             Continue = True
             while (Continue):
                 print 'Choose account type: 1) Box 2) Google Drive'
@@ -658,6 +687,8 @@ class cloudview:
                 i = raw_input()
                 if i != 'y':
                     Continue = False
+            """
+            print 'default cloud location for file addition'
 
         """all the client do authentication"""
         file_idex = 0
@@ -679,7 +710,17 @@ class cloudview:
                 print 'call authenticate with '+'.Token'+str(file_idex)
                 x.authenticate('.Token'+str(file_idex))
             file_idex = file_idex +1
+        for x in self.client:
+            if x.authenticated:
+                self.authenticated_clients += 1
             
+        print 'number of configured clients '+str(self.configured_clients)
+        print 'number of authenticated clients '+str(self.authenticated_clients)
+        if self.authenticated_clients <= self.configured_clients - 2:
+            self.initialized = False
+            return 
+        if self.authenticated_clients == self.configured_clients - 1:
+            self.recovering_mode = '(recovering mode)'
         self.initialized = True
 
     def featureTest(self):
@@ -688,7 +729,6 @@ class cloudview:
 def main(argv):
     print 'app starts'
     cv = cloudview() 
-    cv.sync()
     cv.run(argv)
     cv.sync()
     cv.write_meta()

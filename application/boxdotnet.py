@@ -145,7 +145,6 @@ class XMLNode:
 
 
 class BoxDotNetError(Exception):
-    """Exception class for errors received from Facebook."""
     pass
 
 class BoxDotNet(object):
@@ -219,7 +218,6 @@ class BoxDotNet(object):
             print 'no token file been established'
 
         if self.authenticated == False:
-            self.authenticated = True
             # get ticket
             rsp = self.get_ticket (api_key=self.API_KEY)
             ticket = rsp.ticket[0].elementText
@@ -230,7 +228,11 @@ class BoxDotNet(object):
             raw_input(url)
 
             # get token
-            rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)
+            try:
+                rsp = self.get_auth_token(api_key=self.API_KEY, ticket=ticket)
+            except BoxDotNetError:
+                #we get no token, and we set authenticate as False
+                return    
             self.token = rsp.auth_token[0].elementText
             #self.token = raw_input()
             print "get token response: "
@@ -238,6 +240,7 @@ class BoxDotNet(object):
             # write token to file
             f = open(Token, 'wb')
             f.write(self.token)
+            self.authenticated = True
 
     def __getattr__(self, method, **arg):
         """
