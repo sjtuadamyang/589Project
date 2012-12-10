@@ -243,7 +243,6 @@ class cloudview:
                 continue
             x = self.client[int(local_entry.primary[0]['type'])]
             y = self.client[int(server_entry.primary[0]['type'])]
-            
             x1 = self.client[int(local_entry.backup[0]['type'])]
             y1 = self.client[int(server_entry.backup[0]['type'])]
             x1_type = self.config[int(local_entry.backup[0]['type'])][0]
@@ -251,8 +250,10 @@ class cloudview:
             if local_entry['id'] == server_entry['id']:
                 if int(local_entry['ts'])>int(server_entry['ts']):
                     #upload to server and check box_id
-                    x.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
-                    x1.replace(local_entry.backup[0]['file_id'], cv_location+local_entry['fullpath'])
+                    if x.authenticated == True:
+                        x.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
+                    if x1.authenticated == True:
+                        x1.replace(local_entry.backup[0]['file_id'], cv_location+local_entry['fullpath'])
                     '''
                     if local_entry.primary[0]['type']=='box':
                         self.client_box.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
@@ -263,10 +264,27 @@ class cloudview:
                     #download from server and add path to current path tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
                     #print "download from "+x.type
+                    succeed = False
                     if x.type == 'box':
-                        x.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
+                        if x.authenticated == True:
+                             x.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
+                             succeed = True
                     if x.type == 'gdr':
-                        x.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
+                        if x.authenticated == True:
+                             x.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
+                             succeed  = True
+                    if succeed == False:
+                        if x1.type == 'box':
+                            if x1.authenticated == True:
+                                x1.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
+                                succeed = True
+                        if x1.type == 'gdr':
+                            if x1.authenticated == True:
+                                x1.download(server_entry.primary[0]['download_url'], cv_location+server_entry['fullpath'])
+                                succeed  = True
+                    if succeed == False:
+                        print 'Too many accouts not available, data corrupted...'
+                         
                     '''
                     if local_entry.primary[0]['type']=='box':
                         self.client_box.download(server_entry.primary[0]['file_id'], cv_location+server_entry['fullpath'])
@@ -279,8 +297,10 @@ class cloudview:
             if local_entry['id'] > server_entry['id']:
                 if l_ts>s_ts:
                     #delete server files
-                    x.delete(server_entry.primary[0]['file_id'])
-                    x1.delete(server_entry.backup[0]['file_id'])
+                    if x.authenticated == True:
+                        x.delete(server_entry.primary[0]['file_id'])
+                    if x1.authenticated == True:
+                        x1.delete(server_entry.backup[0]['file_id'])
                     '''
                     if server_entry.primary[0]['type']=='box':
                         self.client_box.delete(server_entry.primary[0]['file_id'])
@@ -315,22 +335,26 @@ class cloudview:
                 elif l_ts>s_ts:
                     #upload all remain files
                     if x.type=='box':
-                        file_id = x.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
-                        local_entry.primary[0]['file_id'] = str(file_id)
+                        if x.authenticated == True:
+                            file_id = x.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
+                            local_entry.primary[0]['file_id'] = str(file_id)
                     if x.type=='gdr':
-                        file_id, download_url = x.upload(self.cv_location + local_entry['fullpath'])
-                        local_entry.primary[0]['file_id'] = str(file_id)
-                        #print download_url
-                        local_entry.primary[0]['download_url'] = download_url
+                        if x.authenticated == True:
+                            file_id, download_url = x.upload(self.cv_location + local_entry['fullpath'])
+                            local_entry.primary[0]['file_id'] = str(file_id)
+                            #print download_url
+                            local_entry.primary[0]['download_url'] = download_url
                     #print x1_type
                     if x1_type=='box':
-                        file_id = x1.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
-                        local_entry.backup[0]['file_id'] = str(file_id)
+                        if x1.authenticated == True:
+                            file_id = x1.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
+                            local_entry.backup[0]['file_id'] = str(file_id)
                     if x1_type=='gdr':
-                        file_id, download_url = x1.upload(self.cv_location + local_entry['fullpath'])
-                        local_entry.backup[0]['file_id'] = str(file_id)
-                        #print download_url
-                        local_entry.backup[0]['download_url'] = download_url
+                        if x1.authenticated == True:
+                            file_id, download_url = x1.upload(self.cv_location + local_entry['fullpath'])
+                            local_entry.backup[0]['file_id'] = str(file_id)
+                            #print download_url
+                            local_entry.backup[0]['download_url'] = download_url
 
 
         if j<len(self.server_file):
@@ -351,20 +375,36 @@ class cloudview:
                     #download all remaining files and update folder tree
                     self.folderRoot.add_child_path(os.path.dirname(server_entry['fullpath'])+'/')
                     #print y.type
+                    succeed = False
                     if y.type=='box':
                         #print "box download " 
-                        y.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])
+                        if y.authenticated == True:
+                            y.download(server_entry.primary[0]['file_id'], self.cv_location+server_entry['fullpath'])
+                            succeed = True
                     if y.type=='gdr':
-                        y.download(server_entry.primary[0]['download_url'], self.cv_location+server_entry['fullpath'])
+                        if y.authenticated == True:
+                            y.download(server_entry.primary[0]['download_url'], self.cv_location+server_entry['fullpath'])
+                            succeed = True
+                    if succeed  == True:
+                        continue
                     if y1_type=='box':
                         #print "box download " 
-                        y1.download(server_entry.backup[0]['file_id'], self.cv_location+server_entry['fullpath'])
+                        if y1.authenticated == True:
+                            y1.download(server_entry.backup[0]['file_id'], self.cv_location+server_entry['fullpath'])
+                            succeed = True
                     if y1_type=='gdr':
-                        y1.download(server_entry.backup[0]['download_url'], self.cv_location+server_entry['fullpath'])
+                        if y1.authenticated == True:
+                            y1.download(server_entry.backup[0]['download_url'], self.cv_location+server_entry['fullpath'])
+                            succeed = True
+                    if succeed == False:
+                        print 'Too many accounts down, data corrupted'
                 elif l_ts>s_ts:
                     #delete all remaining files
-                    y.delete(server_entry.primary[0]['file_id'])
-                    y1.delete(server_entry.backup[0]['file_id'])
+                    
+                    if y.authenticated == True:
+                        y.delete(server_entry.primary[0]['file_id'])
+                    if y1.authenticated == True:
+                        y1.delete(server_entry.backup[0]['file_id'])
                     '''
                     if server_entry.primary[0]['type']=='box':
                         self.client_box.delete(server_entry.primary[0]['file_id'])
@@ -385,6 +425,8 @@ class cloudview:
             f.close()
             #upload self.metalist to all servers
             for x in self.client:
+                if x.authenticated == False:
+                    continue
                 x.setmetadata('.metadata.xml')
 
 
@@ -401,6 +443,8 @@ class cloudview:
         """get the most updated server metadata"""
         max_ts = -1
         for x in self.client:
+            if x.authenticated == False:
+                continue
             sermeta = x.getmetadata()
             tmp_ts = 0 if (sermeta==None) else int(sermeta.view[0]['ts'])
             if (tmp_ts > max_ts):

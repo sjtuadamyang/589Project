@@ -55,9 +55,16 @@ class GOOGLE_VIEW:
         flow = OAuth2WebServerFlow(self.CLIENT_ID, self.CLIENT_SECRET, self.SCOPES, self.REDIRECT_URI)
         authorize_url = flow.step1_get_authorize_url()
         print 'Go to the following link in your browser: '+ authorize_url
-        webbrowser.open_new_tab(authorize_url);
+        #webbrowser.open_new_tab(authorize_url);
         code = raw_input('Enter verification code: ').strip()
-        self.credentials = flow.step2_exchange(code)
+        try:
+          self.credentials = flow.step2_exchange(code)
+        except FlowExchangeError:
+          print 'Google Drive Account Authenticate Failed'
+          return
+        except httplib2.SSLHandshakeError:
+            print 'Google Drive Account Authenticate Failed'
+            return
         # def store_credentials(credentials):
         f = open(fn, 'w+')
         f.write(self.credentials.to_json())
@@ -67,7 +74,11 @@ class GOOGLE_VIEW:
     def _build_service(self):
         http = httplib2.Http()
         http = self.credentials.authorize(http)
-        self.Drive_Service = build('drive', 'v2', http=http)
+        try:
+           self.Drive_Service = build('drive', 'v2', http=http)
+        except httplib2.SSLHandshakeError:
+            print 'Google Drive Account Authenticate Failed'
+            return
         self.authenticated = True
 
     def download(self, download_url, path):
