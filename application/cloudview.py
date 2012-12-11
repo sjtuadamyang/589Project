@@ -256,12 +256,18 @@ class cloudview:
             x1_type = self.config[int(local_entry.backup[0]['type'])][0]
             y1_type = self.config[int(server_entry.backup[0]['type'])][0]
             if local_entry['id'] == server_entry['id']:
-                if int(local_entry['ts'])>int(server_entry['ts']):
+                if int(local_entry['ts'])>int(server_entry['ts']) or local_entry.primary[0]['status']=='1' or local_entry.backup[0]['status']=='1':
                     #upload to server and check box_id
                     if x.authenticated == True:
                         x.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
+                        local_entry.primary[0]['status']='0'
+                    else:
+                        local_entry.primary[0]['status']='1'
                     if x1.authenticated == True:
                         x1.replace(local_entry.backup[0]['file_id'], cv_location+local_entry['fullpath'])
+                        local_entry.backup[0]['status']='0'
+                    else:
+                        local_entry.backup[0]['status']='1'
                     '''
                     if local_entry.primary[0]['type']=='box':
                         self.client_box.replace(local_entry.primary[0]['file_id'], cv_location+local_entry['fullpath'])
@@ -340,29 +346,41 @@ class cloudview:
                     #delete all remain files
                     fullpath = self.cv_location + local_entry['fullpath']
                     os.system('rm '+fullpath)
-                elif l_ts>s_ts:
+                elif l_ts>s_ts or local_entry.primary[0]['status'] =='1'or local_entry.backup[0]['status']=='1':
                     #upload all remain files
                     if x.type=='box':
                         if x.authenticated == True:
                             file_id = x.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
                             local_entry.primary[0]['file_id'] = str(file_id)
+                            local_entry.primary[0]['status'] = '0'
+                        else:
+                            local_entry.primary[0]['status'] = '1'
                     if x.type=='gdr':
                         if x.authenticated == True:
                             file_id, download_url = x.upload(self.cv_location + local_entry['fullpath'])
                             local_entry.primary[0]['file_id'] = str(file_id)
                             #print download_url
                             local_entry.primary[0]['download_url'] = download_url
+                            local_entry.primary[0]['status'] = '0'
+                        else:
+                            local_entry.primary[0]['status'] = '1'
                     #print x1_type
                     if x1_type=='box':
                         if x1.authenticated == True:
                             file_id = x1.upload(self.cv_location + local_entry['fullpath'], local_entry['id'])
                             local_entry.backup[0]['file_id'] = str(file_id)
+                            local_entry.backup[0]['status'] = '0'
+                        else:
+                            local_entry.backup[0]['status'] = '1'
                     if x1_type=='gdr':
                         if x1.authenticated == True:
                             file_id, download_url = x1.upload(self.cv_location + local_entry['fullpath'])
                             local_entry.backup[0]['file_id'] = str(file_id)
                             #print download_url
                             local_entry.backup[0]['download_url'] = download_url
+                            local_entry.backup[0]['status'] = '0'
+                        else:
+                            local_entry.backup[0]['status'] = '1'
 
 
         if j<len(self.server_file):
@@ -525,6 +543,7 @@ class cloudview:
         prime['type']=primary
         prime['file_id']=''
         prime['download_url']=''
+        prime['status']='0'
         setattr(file, 'primary', [])
         file.primary.append(prime)
         backup = boxdotnet.XMLNode()
@@ -535,6 +554,7 @@ class cloudview:
         backup['type']=str(tmp)
         backup['file_id']=''
         backup['download_url']=''
+        backup['status']='0'
         setattr(file, 'backup', [])
         file.backup.append(backup)
         self.metadata.view[0]['cur_id']=str(int(self.metadata.view[0]['cur_id'])+1)
